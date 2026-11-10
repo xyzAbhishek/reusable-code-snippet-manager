@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS snippet_manager_db;
+USE snippet_manager_db;
+
+CREATE TABLE IF NOT EXISTS snippets (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    language VARCHAR(50) NOT NULL,
+    category VARCHAR(80) NOT NULL,
+    tags VARCHAR(255),
+    description VARCHAR(500),
+    code_content TEXT NOT NULL,
+    author VARCHAR(100) NOT NULL DEFAULT 'Team Developer',
+    favorite BOOLEAN NOT NULL DEFAULT FALSE,
+    shared_with_team BOOLEAN NOT NULL DEFAULT TRUE,
+    share_token VARCHAR(64) UNIQUE,
+    copy_count INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

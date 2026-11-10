@@ -1,0 +1,65 @@
+/* Reusable Code Snippet Manager - Custom Stylesheet */
+:root {
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --accent-primary: #38bdf8;
+    --accent-secondary: #818cf8;
+    --code-bg: #090d16;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+}
+
+.navbar-brand-badge {
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.snippet-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.snippet-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+}
+
+.code-preview {
+    background-color: var(--code-bg);
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.84rem;
+    padding: 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid #1e293b;
+    max-height: 220px;
+    overflow-y: auto;
+    white-space: pre;
+}
+
+.tag-pill {
+    background-color: rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.tag-pill:hover {
+    background-color: rgba(56, 189, 248, 0.25);
+}

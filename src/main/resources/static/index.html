@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reusable Code Snippet Manager | Full-Stack Developer Platform</title>
+    <!-- Bootstrap 5.3.3 CSS & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b1120;
+            --bg-surface: #111827;
+            --bg-card: #1e293b;
+            --border-subtle: #334155;
+            --accent-cyan: #38bdf8;
+            --accent-indigo: #6366f1;
+            --accent-emerald: #10b981;
+            --code-surface: #090d16;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar-custom {
+            background: rgba(17, 24, 39, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b1120;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.1rem 1.25rem;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .snippet-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .snippet-card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.55);
+            transform: translateY(-2px);
+        }
+
+        .code-block-wrapper {
+            background-color: var(--code-surface);
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block-header {
+            background: rgba(30, 41, 59, 0.65);
+            padding: 0.4rem 0.85rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-pre {
+            margin: 0;
+            padding: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            max-height: 190px;
+            overflow-y: auto;
+            white-space: pre;
+        }
+
+        .tag-badge {
+            background: rgba(56, 189, 248, 0.12);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            font-size: 0.73rem;
+            font-weight: 500;
+            padding: 0.22rem 0.6rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .tag-badge:hover {
+            background: rgba(56, 189, 248, 0.25);
+            color: #fff;
+        }
+
+        .lang-badge {
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+        }
+
+        .nav-pills .nav-link {
+            color: #cbd5e1;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--accent-indigo), #4f46e5);
+            color: #fff;
+        }
+
+        .sidebar-filter-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #cbd5e1;
+            font-size: 0.88rem;
+            transition: all 0.15s ease;
+        }
+
+        .sidebar-filter-btn:hover, .sidebar-filter-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #fff;
+        }
+
+        .api-log-box {
+            background: var(--code-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            max-height: 360px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .toast-container-custom {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            z-index: 1080;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-2">
+        <div class="container-fluid px-3 px-lg-4">
+            <div class="d-flex align-items-center gap-2">
+                <span class="brand-icon"><i class="bi bi-braces-asterisk"></i></span>
+                <div>
+                    <span class="fw-bold fs-5 text-white d-block lh-1">SnippetVault</span>
+                    <small class="text-secondary" style="font-size: 0.72rem;">Spring Boot 3 + MySQL 8 + Bootstrap 5</small>
+                </div>
+            </div>
+
+            <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse mt-2 mt-lg-0" id="mainNavbar">
+                <!-- View Switcher Tabs -->
+                <ul class="nav nav-pills mx-auto gap-1 mb-2 mb-lg-0" id="viewTabs">
+                    <li class="nav-item">
+                        <button type="button" class="nav-link active" id="tabBtnWorkspace" onclick="switchView('workspace')">
+                            <i class="bi bi-grid-1x2 me-1"></i> Snippet Library
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" id="tabBtnApiTester" onclick="switchView('apitester')">
+                            <i class="bi bi-hdd-network me-1"></i> REST API &amp; Postman Simulator
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" id="tabBtnArchitecture" onclick="switchView('architecture')">
+                            <i class="bi bi-diagram-3 me-1"></i> Project Structure &amp; Setup Guide
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Right Actions -->
+                <div class="d-flex align-items-center gap-2">
+                    <span id="backendStatusBadge" class="badge bg-success-subtle text-success border border-success-subtle py-2 px-2">
+                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i> Engine Ready
+                    </span>
+                    <button type="button" class="btn btn-info btn-sm fw-semibold text-dark px-3" onclick="openSnippetModal()">
+                        <i class="bi bi-plus-lg me-1"></i> New Snippet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid px-3 px-lg-4 py-4">
+
+        <!-- ==================== VIEW 1: SNIPPET LIBRARY WORKSPACE ==================== -->
+        <div id="viewWorkspace">
+            <!-- KPI Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-secondary small fw-medium">Total Snippets</div>
+                                <div class="fs-3 fw-bold text-white" id="kpiTotal">0</div>
+                            </div>
+                            <div class="fs-2 text-info opacity-75"><i class="bi bi-code-square"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-secondary small fw-medium">Languages Covered</div>
+                                <div class="fs-3 fw-bold text-white" id="kpiLanguages">0</div>
+                            </div>
+                            <div class="fs-2 text-primary opacity-75"><i class="bi bi-terminal"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-secondary small fw-medium">Starred Favorites</div>
+                                <div class="fs-3 fw-bold text-warning" id="kpiFavorites">0</div>
+                            </div>
+                            <div class="fs-2 text-warning opacity-75"><i class="bi bi-star-fill"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-secondary small fw-medium">Total Code Copies</div>
+                                <div class="fs-3 fw-bold text-success" id="kpiCopies">0</div>
+                            </div>
+                            <div class="fs-2 text-success opacity-75"><i class="bi bi-clipboard-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left Sidebar: Categories, Collections & Quick Filters -->
+                <div class="col-lg-3">
+                    <div class="p-3 rounded-4 border border-secondary border-opacity-25" style="background-color: var(--bg-surface);">
+                        <h6 class="text-uppercase text-secondary fw-bold small mb-3">Collections</h6>
+                        <div class="d-grid gap-1 mb-4">
+                            <button type="button" class="sidebar-filter-btn active" id="filterScopeAll" onclick="setScopeFilter('all')">
+                                <span><i class="bi bi-collection me-2 text-info"></i>All Snippets</span>
+                                <span class="badge bg-secondary rounded-pill" id="countAll">0</span>
+                            </button>
+                            <button type="button" class="sidebar-filter-btn" id="filterScopeFav" onclick="setScopeFilter('favorites')">
+                                <span><i class="bi bi-star-fill me-2 text-warning"></i>Starred Favorites</span>
+                                <span class="badge bg-secondary rounded-pill" id="countFav">0</span>
+                            </button>
+                            <button type="button" class="sidebar-filter-btn" id="filterScopeTeam" onclick="setScopeFilter('team')">
+                                <span><i class="bi bi-people-fill me-2 text-success"></i>Shared with Team</span>
+                                <span class="badge bg-secondary rounded-pill" id="countTeam">0</span>
+                            </button>
+                        </div>
+
+                        <h6 class="text-uppercase text-secondary fw-bold small mb-2">Categories</h6>
+                        <div class="d-grid gap-1 mb-4" id="categoryFilterList"></div>
+
+                        <h6 class="text-uppercase text-secondary fw-bold small mb-2">Popular Tags</h6>
+                        <div class="d-flex flex-wrap gap-1 mb-4" id="popularTagsContainer"></div>
+
+                        <hr class="border-secondary opacity-25">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="exportSnippetsJson()">
+                                <i class="bi bi-download me-1"></i> Export JSON Backup
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetDemoData()">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Seed Snippets
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Main Area: Search Bar & Snippet Cards -->
+                <div class="col-lg-9">
+                    <!-- Search & Filter Toolbar -->
+                    <div class="p-3 rounded-4 border border-secondary border-opacity-25 mb-3" style="background-color: var(--bg-surface);">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="searchInput" class="form-control bg-dark border-secondary text-white" placeholder="Search title, code, tags, description..." oninput="renderSnippets()">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearSearchAndFilters()" title="Clear filters">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select id="languageSelect" class="form-select bg-dark border-secondary text-white" aria-label="Filter by language" onchange="renderSnippets()">
+                                    <option value="">All Languages</option>
+                                    <option value="Java">Java</option>
+                                    <option value="JavaScript">JavaScript</option>
+                                    <option value="SQL">SQL</option>
+                                    <option value="Python">Python</option>
+                                    <option value="HTML/CSS">HTML/CSS</option>
+                                    <option value="Dockerfile">Dockerfile</option>
+                                    <option value="YAML">YAML</option>
+                                    <option value="Bash">Bash</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <select id="sortSelect" class="form-select bg-dark border-secondary text-white" aria-label="Sort snippets" onchange="renderSnippets()">
+                                    <option value="updated">Sort: Recently Updated</option>
+                                    <option value="copies">Sort: Most Copied</option>
+                                    <option value="title">Sort: Title (A - Z)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Filter Indicator -->
+                    <div id="activeFilterBanner" class="d-none alert alert-info py-2 px-3 d-flex justify-content-between align-items-center mb-3">
+                        <span id="activeFilterText" class="small"></span>
+                        <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none" onclick="clearSearchAndFilters()">Clear All</button>
+                    </div>
+
+                    <!-- Snippets Grid -->
+                    <div class="row g-3" id="snippetsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 2: REST API & POSTMAN SIMULATOR ==================== -->
+        <div id="viewApiTester" class="d-none">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="p-4 rounded-4 border border-secondary border-opacity-25" style="background-color: var(--bg-surface);">
+                        <h5 class="fw-bold mb-1"><i class="bi bi-send-check text-info me-2"></i>Interactive REST API Console</h5>
+                        <p class="text-secondary small mb-3">Test the Spring Boot <code>SnippetController</code> endpoints directly or inspect the bundled Postman collection.</p>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-semibold" for="apiPresetSelect">Select Endpoint Preset</label>
+                            <select id="apiPresetSelect" class="form-select bg-dark border-secondary text-white" onchange="loadApiPreset()">
+                                <option value="GET_ALL">GET /api/snippets (List &amp; Filter Snippets)</option>
+                                <option value="GET_STATS">GET /api/snippets/stats (Dashboard Metrics)</option>
+                                <option value="POST_CREATE">POST /api/snippets (Create New Snippet)</option>
+                                <option value="PATCH_FAV">PATCH /api/snippets/1/favorite (Toggle Star)</option>
+                                <option value="POST_COPY">POST /api/snippets/1/copy (Increment Copy Count)</option>
+                                <option value="GET_SHARE">GET /api/snippets/share/sb-exc-001 (Lookup by Share Token)</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-4">
+                                <label class="form-label small text-secondary" for="apiMethodInput">HTTP Method</label>
+                                <input type="text" id="apiMethodInput" class="form-control bg-dark border-secondary text-info fw-bold" value="GET" readonly>
+                            </div>
+                            <div class="col-8">
+                                <label class="form-label small text-secondary" for="apiEndpointInput">Endpoint URI</label>
+                                <input type="text" id="apiEndpointInput" class="form-control bg-dark border-secondary text-white" value="/api/snippets">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary" for="apiPayloadInput">Request JSON Body (for POST/PUT)</label>
+                            <textarea id="apiPayloadInput" rows="6" class="form-control bg-dark border-secondary text-white font-monospace small" placeholder="No body required for GET/PATCH"></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-info w-100 fw-semibold text-dark" onclick="executeSimulatedApiCall()">
+                            <i class="bi bi-play-fill me-1"></i> Send API Request
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="p-4 rounded-4 border border-secondary border-opacity-25 h-100" style="background-color: var(--bg-surface);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-terminal-plus text-success me-2"></i>HTTP Response Inspector</h5>
+                            <span id="apiStatusPill" class="badge bg-success">200 OK</span>
+                        </div>
+                        <pre id="apiResponseOutput" class="api-log-box text-info mb-4">// Click "Send API Request" to inspect the JSON response payload...</pre>
+
+                        <h6 class="fw-bold text-white mb-2">Spring Boot REST Endpoints Reference</h6>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-sm table-bordered border-secondary small align-middle mb-0">
+                                <thead>
+                                    <tr class="text-secondary">
+                                        <th>Method</th>
+                                        <th>Endpoint</th>
+                                        <th>Controller Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><span class="badge bg-success">GET</span></td><td><code>/api/snippets</code></td><td>Search by <code>keyword</code>, <code>language</code>, <code>category</code></td></tr>
+                                    <tr><td><span class="badge bg-success">GET</span></td><td><code>/api/snippets/{id}</code></td><td>Fetch single snippet by primary key ID</td></tr>
+                                    <tr><td><span class="badge bg-success">GET</span></td><td><code>/api/snippets/share/{token}</code></td><td>Resolve team share link by unique token</td></tr>
+                                    <tr><td><span class="badge bg-primary">POST</span></td><td><code>/api/snippets</code></td><td>Validate &amp; persist new snippet in MySQL</td></tr>
+                                    <tr><td><span class="badge bg-warning text-dark">PUT</span></td><td><code>/api/snippets/{id}</code></td><td>Update existing snippet fields</td></tr>
+                                    <tr><td><span class="badge bg-info text-dark">PATCH</span></td><td><code>/api/snippets/{id}/favorite</code></td><td>Toggle favorite status</td></tr>
+                                    <tr><td><span class="badge bg-primary">POST</span></td><td><code>/api/snippets/{id}/copy</code></td><td>Increment usage copy counter</td></tr>
+                                    <tr><td><span class="badge bg-danger">DELETE</span></td><td><code>/api/snippets/{id}</code></td><td>Delete snippet record from MySQL</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 3: ARCHITECTURE & SETUP GUIDE ==================== -->
+        <div id="viewArchitecture" class="d-none">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 border border-secondary border-opacity-25 h-100" style="background-color: var(--bg-surface);">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-folder2-open text-warning me-2"></i>Organized Project Structure</h5>
+                        <pre class="api-log-box text-light mb-0">reusable-code-snippet-manager/
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml                 # GitHub Actions CI/CD pipeline
+├── postman/
+│   └── Reusable_Code_Snippet_Manager.postman_collection.json
+├── src/
+│   ├── main/
+│   │   ├── java/com/snippetmanager/
+│   │   │   ├── SnippetManagerApplication.java
+│   │   │   ├── config/
+│   │   │   │   └── WebConfig.java    # CORS configuration
+│   │   │   ├── controller/
+│   │   │   │   └── SnippetController.java
+│   │   │   ├── dto/
+│   │   │   │   └── SnippetRequestDTO.java
+│   │   │   ├── exception/
+│   │   │   │   ├── GlobalExceptionHandler.java
+│   │   │   │   └── ResourceNotFoundException.java
+│   │   │   ├── model/
+│   │   │   │   └── Snippet.java      # JPA Entity (@Table("snippets"))
+│   │   │   ├── repository/
+│   │   │   │   └── SnippetRepository.java
+│   │   │   └── service/
+│   │   │       └── SnippetService.java
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       ├── schema.sql            # MySQL table creation DDL
+│   │       ├── data.sql              # Seed code snippets
+│   │       └── static/               # Frontend (HTML, CSS, JS, Bootstrap)
+│   │           ├── index.html
+│   │           ├── css/styles.css
+│   │           └── js/app.js
+│   └── test/
+│       ├── java/com/snippetmanager/
+│       │   ├── controller/SnippetControllerTest.java
+│       │   └── service/SnippetServiceTest.java
+│       └── resources/
+│           └── application-test.properties
+├── Dockerfile                        # Multi-stage Maven + JRE 17 build
+├── docker-compose.yml                # MySQL 8.0 + Spring Boot orchestration
+├── pom.xml                           # Maven dependencies &amp; JUnit 5
+└── README.md</pre>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 border border-secondary border-opacity-25 h-100" style="background-color: var(--bg-surface);">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-rocket-takeoff text-info me-2"></i>Step-by-Step Execution Checklist</h5>
+                        <div class="accordion accordion-flush" id="setupAccordion">
+                            <div class="accordion-item bg-transparent border-secondary">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-dark text-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#step1Collapse">
+                                        1. Run Instantly with Docker Compose (Recommended)
+                                    </button>
+                                </h2>
+                                <div id="step1Collapse" class="accordion-collapse collapse show" data-bs-parent="#setupAccordion">
+                                    <div class="accordion-body text-secondary small">
+                                        Starts both MySQL 8.0 (with automatic schema &amp; seed data initialization) and the Spring Boot application container:
+                                        <pre class="bg-black text-info p-2 rounded mt-2 mb-0">docker compose up --build -d
+# Open http://localhost:8080 in your browser</pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item bg-transparent border-secondary">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-dark text-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#step2Collapse">
+                                        2. Run Locally with Maven, Java 17 &amp; MySQL
+                                    </button>
+                                </h2>
+                                <div id="step2Collapse" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                                    <div class="accordion-body text-secondary small">
+                                        Create the database in MySQL and launch Spring Boot via Maven:
+                                        <pre class="bg-black text-info p-2 rounded mt-2 mb-0">mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS snippet_manager_db;"
+mvn clean test
+mvn spring-boot:run</pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item bg-transparent border-secondary">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-dark text-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#step3Collapse">
+                                        3. Run JUnit 5 Tests &amp; Postman API Collection
+                                    </button>
+                                </h2>
+                                <div id="step3Collapse" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                                    <div class="accordion-body text-secondary small">
+                                        Execute unit and MockMvc controller tests using the H2 test profile, and import <code>postman/Reusable_Code_Snippet_Manager.postman_collection.json</code> into Postman:
+                                        <pre class="bg-black text-info p-2 rounded mt-2 mb-0">mvn test</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==================== MODAL: CREATE / EDIT SNIPPET ==================== -->
+    <div class="modal fade" id="snippetModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="snippetModalTitle">Create Reusable Code Snippet</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="snippetForm" onsubmit="saveSnippet(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="snippetIdInput">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label small text-secondary fw-semibold" for="titleInput">Snippet Title *</label>
+                                <input type="text" id="titleInput" class="form-control bg-black border-secondary text-white" required maxlength="150" placeholder="e.g., Spring Boot JWT Authentication Filter">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-semibold" for="languageInput">Language *</label>
+                                <select id="languageInput" class="form-select bg-black border-secondary text-white" required>
+                                    <option value="Java">Java</option>
+                                    <option value="JavaScript">JavaScript</option>
+                                    <option value="SQL">SQL</option>
+                                    <option value="Python">Python</option>
+                                    <option value="HTML/CSS">HTML/CSS</option>
+                                    <option value="Dockerfile">Dockerfile</option>
+                                    <option value="YAML">YAML</option>
+                                    <option value="Bash">Bash</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-semibold" for="categoryInput">Category *</label>
+                                <select id="categoryInput" class="form-select bg-black border-secondary text-white" required>
+                                    <option value="Backend & REST API">Backend &amp; REST API</option>
+                                    <option value="Frontend & DOM">Frontend &amp; DOM</option>
+                                    <option value="Database & Queries">Database &amp; Queries</option>
+                                    <option value="Security & Auth">Security &amp; Auth</option>
+                                    <option value="DevOps & Docker">DevOps &amp; Docker</option>
+                                    <option value="Algorithms & Utils">Algorithms &amp; Utils</option>
+                                    <option value="Testing & JUnit">Testing &amp; JUnit</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-semibold" for="authorInput">Author / Team Member</label>
+                                <input type="text" id="authorInput" class="form-control bg-black border-secondary text-white" placeholder="e.g., Aarav Sharma" value="Aarav Sharma">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-secondary fw-semibold" for="tagsInput">Tags (comma-separated)</label>
+                                <input type="text" id="tagsInput" class="form-control bg-black border-secondary text-white" placeholder="e.g., spring-boot, rest-api, validation, mysql">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-secondary fw-semibold" for="descriptionInput">Description &amp; Usage Notes</label>
+                                <input type="text" id="descriptionInput" class="form-control bg-black border-secondary text-white" maxlength="500" placeholder="Brief summary of when and how to reuse this snippet">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-secondary fw-semibold" for="codeContentInput">Code Snippet *</label>
+                                <textarea id="codeContentInput" rows="7" class="form-control bg-black border-secondary text-info font-monospace small" required placeholder="Paste or write your reusable code here..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-1">
+                                    <input class="form-check-input" type="checkbox" id="favoriteInput">
+                                    <label class="form-check-label small" for="favoriteInput">Mark as Starred Favorite</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-1">
+                                    <input class="form-check-input" type="checkbox" id="sharedInput" checked>
+                                    <label class="form-check-label small" for="sharedInput">Share with Team Members</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info fw-semibold text-dark px-4">Save Snippet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: TEAM SHARE LINK & EMBED ==================== -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-share-fill text-info me-2"></i>Share Snippet with Team</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-secondary mb-2" id="shareModalSnippetTitle"></p>
+                    <label class="form-label small text-secondary fw-semibold" for="shareUrlInput">Direct REST Share URL</label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="shareUrlInput" class="form-control bg-black border-secondary text-info font-monospace small" readonly>
+                        <button class="btn btn-info text-dark fw-semibold" type="button" onclick="copyShareUrl()">
+                            <i class="bi bi-clipboard me-1"></i> Copy Link
+                        </button>
+                    </div>
+                    <label class="form-label small text-secondary fw-semibold" for="shareMarkdownInput">Markdown Snippet for Team Chat / PRs</label>
+                    <textarea id="shareMarkdownInput" rows="5" class="form-control bg-black border-secondary text-light font-monospace small" readonly></textarea>
+                    <button class="btn btn-outline-info btn-sm w-100 mt-2" type="button" onclick="copyShareMarkdown()">
+                        <i class="bi bi-markdown me-1"></i> Copy Markdown Block
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: DELETE CONFIRMATION ==================== -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary text-white">
+                <div class="modal-header border-secondary py-2">
+                    <h6 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Confirm Delete</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body small text-secondary">
+                    Are you sure you want to delete <strong class="text-white" id="deleteModalTitle"></strong>?
+                </div>
+                <div class="modal-footer border-secondary py-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn" onclick="confirmDeleteSnippet()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container-custom" id="toastContainer"></div>
+
+    <!-- Bootstrap 5.3.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Initial Seed Snippets (mirrors src/main/resources/data.sql)
+        const SEED_SNIPPETS = [
+            {
+                id: 1,
+                title: "Spring Boot Global Exception Handler",
+                language: "Java",
+                category: "Backend & REST API",
+                tags: "spring-boot,exception,rest-api,validation",
+                description: "Centralized @RestControllerAdvice exception handler for Bean Validation and 404 errors in Spring Boot 3.",
+                codeContent: "@RestControllerAdvice\npublic class GlobalExceptionHandler {\n    @ExceptionHandler(ResourceNotFoundException.class)\n    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {\n        return ResponseEntity.status(HttpStatus.NOT_FOUND)\n                .body(Map.of(\"error\", ex.getMessage()));\n    }\n}",
+                author: "Aarav Sharma",
+                favorite: true,
+                sharedWithTeam: true,
+                shareToken: "sb-exc-001",
+                copyCount: 42,
+                updatedAt: "2026-11-10T10:15:00"
+            },
+            {
+                id: 2,
+                title: "Debounced Search Input Utility",
+                language: "JavaScript",
+                category: "Frontend & DOM",
+                tags: "debounce,performance,search,events",
+                description: "Lightweight ES6 utility function to debounce rapid input events before firing REST API search calls.",
+                codeContent: "function debounce(fn, delay = 300) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn.apply(this, args), delay);\n  };\n}",
+                author: "Priya Nair",
+                favorite: true,
+                sharedWithTeam: true,
+                shareToken: "js-deb-002",
+                copyCount: 68,
+                updatedAt: "2026-11-10T11:30:00"
+            },
+            {
+                id: 3,
+                title: "MySQL Indexed Full-Text Search Query",
+                language: "SQL",
+                category: "Database & Queries",
+                tags: "mysql,indexing,search,optimization",
+                description: "Optimized MySQL query using LOWER() pattern matching across title, tags, and code content.",
+                codeContent: "SELECT id, title, language, category, tags, copy_count\nFROM snippets\nWHERE LOWER(title) LIKE CONCAT('%', LOWER(:keyword), '%')\n   OR LOWER(tags) LIKE CONCAT('%', LOWER(:keyword), '%')\nORDER BY updated_at DESC\nLIMIT 50;",
+                author: "Rohan Verma",
+                favorite: false,
+                sharedWithTeam: true,
+                shareToken: "sql-idx-003",
+                copyCount: 29,
+                updatedAt: "2026-11-09T16:45:00"
+            },
+            {
+                id: 4,
+                title: "Multi-Stage Spring Boot Dockerfile",
+                language: "Dockerfile",
+                category: "DevOps & Docker",
+                tags: "docker,maven,java-17,containers",
+                description: "Production multi-stage Dockerfile building the Maven JAR in stage 1 and running on Eclipse Temurin JRE 17 in stage 2.",
+                codeContent: "FROM maven:3.9.6-eclipse-temurin-17 AS build\nWORKDIR /app\nCOPY pom.xml .\nRUN mvn dependency:go-offline -B\nCOPY src ./src\nRUN mvn clean package -DskipTests\n\nFROM eclipse-temurin:17-jre-jammy\nWORKDIR /app\nCOPY --from=build /app/target/*.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]",
+                author: "DevOps Guild",
+                favorite: true,
+                sharedWithTeam: true,
+                shareToken: "dkr-sb-004",
+                copyCount: 54,
+                updatedAt: "2026-11-10T09:00:00"
+            },
+            {
+                id: 5,
+                title: "JUnit 5 + Mockito Service Test Template",
+                language: "Java",
+                category: "Testing & JUnit",
+                tags: "junit5,mockito,unit-test,spring-boot",
+                description: "Standard @ExtendWith(MockitoExtension.class) unit test setup verifying repository interactions.",
+                codeContent: "@ExtendWith(MockitoExtension.class)\nclass SnippetServiceTest {\n    @Mock private SnippetRepository repository;\n    @InjectMocks private SnippetService service;\n\n    @Test\n    void shouldReturnSnippetById() {\n        when(repository.findById(1L)).thenReturn(Optional.of(new Snippet()));\n        assertNotNull(service.getSnippetById(1L));\n    }\n}",
+                author: "Ananya Iyer",
+                favorite: false,
+                sharedWithTeam: true,
+                shareToken: "ju5-tst-005",
+                copyCount: 37,
+                updatedAt: "2026-11-08T14:20:00"
+            },
+            {
+                id: 6,
+                title: "Python Retry Decorator with Backoff",
+                language: "Python",
+                category: "Algorithms & Utils",
+                tags: "python,decorator,retry,resilience",
+                description: "Reusable decorator that retries transient network exceptions with exponential backoff.",
+                codeContent: "import time, functools\n\ndef retry(times=3, delay=1.0):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(1, times + 1):\n                try:\n                    return func(*args, **kwargs)\n                except Exception:\n                    if attempt == times: raise\n                    time.sleep(delay * attempt)\n        return wrapper\n    return decorator",
+                author: "Karthik Rao",
+                favorite: false,
+                sharedWithTeam: true,
+                shareToken: "py-ret-006",
+                copyCount: 23,
+                updatedAt: "2026-11-07T18:10:00"
+            }
+        ];
+
+        // Application State
+        let snippets = [];
+        let currentScope = 'all'; // 'all' | 'favorites' | 'team'
+        let currentCategory = '';
+        let currentTag = '';
+        let pendingDeleteId = null;
+        let isBackendConnected = false;
+
+        // Language Badge Styling Map
+        const LANG_COLORS = {
+            "Java": "bg-danger-subtle text-danger border border-danger-subtle",
+            "JavaScript": "bg-warning-subtle text-warning border border-warning-subtle",
+            "SQL": "bg-info-subtle text-info border border-info-subtle",
+            "Python": "bg-primary-subtle text-primary border border-primary-subtle",
+            "HTML/CSS": "bg-success-subtle text-success border border-success-subtle",
+            "Dockerfile": "bg-info-subtle text-info border border-info-subtle",
+            "YAML": "bg-secondary-subtle text-light border border-secondary",
+            "Bash": "bg-light-subtle text-light border border-secondary"
+        };
+
+        // Storage Helpers (Canvas-safe)
+        function loadStoredSnippets() {
+            try {
+                const raw = localStorage.getItem('snippet_vault_data_v1');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                // Ignore storage errors in sandboxed iframes
+            }
+            return JSON.parse(JSON.stringify(SEED_SNIPPETS));
+        }
+
+        function saveStoredSnippets() {
+            try {
+                localStorage.setItem('snippet_vault_data_v1', JSON.stringify(snippets));
+            } catch (e) {
+                // Ignore storage errors in sandboxed iframes
+            }
+        }
+
+        // Initialize App & Probe Spring Boot API if running on localhost:8080
+        async function initApp() {
+            snippets = loadStoredSnippets();
+            if (window.location.protocol.startsWith('http') && window.location.port === '8080') {
+                try {
+                    const apiRoot = '/api/snippets'; const res = await window.fetch(apiRoot);
+                    if (res.ok) {
+                        snippets = await res.json();
+                        isBackendConnected = true;
+                        const badge = document.getElementById('backendStatusBadge');
+                        if (badge) {
+                            badge.innerHTML = '<i class="bi bi-hdd-network-fill me-1"></i> Spring Boot + MySQL Connected';
+                        }
+                    }
+                } catch (err) {
+                    isBackendConnected = false;
+                }
+            }
+            loadApiPreset();
+            renderAll();
+        }
+
+        // View Navigation
+        function switchView(viewName) {
+            const views = {
+                workspace: document.getElementById('viewWorkspace'),
+                apitester: document.getElementById('viewApiTester'),
+                architecture: document.getElementById('viewArchitecture')
+            };
+            const buttons = {
+                workspace: document.getElementById('tabBtnWorkspace'),
+                apitester: document.getElementById('tabBtnApiTester'),
+                architecture: document.getElementById('tabBtnArchitecture')
+            };
+            Object.keys(views).forEach(k => {
+                if (views[k]) views[k].classList.toggle('d-none', k !== viewName);
+                if (buttons[k]) buttons[k].classList.toggle('active', k === viewName);
+            });
+        }
+
+        // Render Complete Workspace
+        function renderAll() {
+            updateKpisAndCounts();
+            renderCategorySidebar();
+            renderPopularTags();
+            renderSnippets();
+        }
+
+        function updateKpisAndCounts() {
+            const total = snippets.length;
+            const langs = new Set(snippets.map(s => s.language)).size;
+            const favs = snippets.filter(s => s.favorite).length;
+            const team = snippets.filter(s => s.sharedWithTeam).length;
+            const copies = snippets.reduce((sum, s) => sum + (Number(s.copyCount) || 0), 0);
+
+            document.getElementById('kpiTotal').textContent = total;
+            document.getElementById('kpiLanguages').textContent = langs;
+            document.getElementById('kpiFavorites').textContent = favs;
+            document.getElementById('kpiCopies').textContent = copies;
+
+            document.getElementById('countAll').textContent = total;
+            document.getElementById('countFav').textContent = favs;
+            document.getElementById('countTeam').textContent = team;
+        }
+
+        function renderCategorySidebar() {
+            const counts = {};
+            snippets.forEach(s => {
+                counts[s.category] = (counts[s.category] || 0) + 1;
+            });
+            const container = document.getElementById('categoryFilterList');
+            const categories = Object.keys(counts).sort();
+            container.innerHTML = categories.map(cat => {
+                const isActive = currentCategory === cat ? 'active' : '';
+                const safeCat = escapeHtml(cat);
+                return `
+                    <button type="button" class="sidebar-filter-btn ${isActive}" onclick="setCategoryFilter('${safeCat.replace(/'/g, "\\'")}')">
+                        <span class="text-truncate"><i class="bi bi-folder2 me-2 text-secondary"></i>${safeCat}</span>
+                        <span class="badge bg-dark border border-secondary rounded-pill">${counts[cat]}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderPopularTags() {
+            const tagCounts = {};
+            snippets.forEach(s => {
+                if (!s.tags) return;
+                s.tags.split(',').map(t => t.trim()).filter(Boolean).forEach(t => {
+                    tagCounts[t] = (tagCounts[t] || 0) + 1;
+                });
+            });
+            const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]).slice(0, 12);
+            const container = document.getElementById('popularTagsContainer');
+            container.innerHTML = sortedTags.map(tag => {
+                const safeTag = escapeHtml(tag);
+                const activeClass = currentTag === tag ? 'border-info bg-info text-dark fw-bold' : '';
+                return `<span class="tag-badge ${activeClass}" onclick="setTagFilter('${safeTag.replace(/'/g, "\\'")}')">#${safeTag}</span>`;
+            }).join('');
+        }
+
+        function setScopeFilter(scope) {
+            currentScope = scope;
+            document.getElementById('filterScopeAll').classList.toggle('active', scope === 'all');
+            document.getElementById('filterScopeFav').classList.toggle('active', scope === 'favorites');
+            document.getElementById('filterScopeTeam').classList.toggle('active', scope === 'team');
+            renderSnippets();
+        }
+
+        function setCategoryFilter(category) {
+            currentCategory = (currentCategory === category) ? '' : category;
+            renderCategorySidebar();
+            renderSnippets();
+        }
+
+        function setTagFilter(tag) {
+            currentTag = (currentTag === tag) ? '' : tag;
+            renderPopularTags();
+            renderSnippets();
+        }
+
+        function clearSearchAndFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('languageSelect').value = '';
+            currentScope = 'all';
+            currentCategory = '';
+            currentTag = '';
+            setScopeFilter('all');
+            renderCategorySidebar();
+            renderPopularTags();
+            renderSnippets();
+        }
+
+        function renderSnippets() {
+            const keyword = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+            const langFilter = document.getElementById('languageSelect').value;
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filtered = snippets.filter(s => {
+                if (currentScope === 'favorites' && !s.favorite) return false;
+                if (currentScope === 'team' && !s.sharedWithTeam) return false;
+                if (currentCategory && s.category !== currentCategory) return false;
+                if (langFilter && s.language !== langFilter) return false;
+                if (currentTag) {
+                    const tagsArr = (s.tags || '').split(',').map(t => t.trim().toLowerCase());
+                    if (!tagsArr.includes(currentTag.toLowerCase())) return false;
+                }
+                if (keyword) {
+                    const haystack = `${s.title} ${s.description} ${s.tags} ${s.codeContent} ${s.author} ${s.category}`.toLowerCase();
+                    if (!haystack.includes(keyword)) return false;
+                }
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'copies') return (b.copyCount || 0) - (a.copyCount || 0);
+                if (sortBy === 'title') return a.title.localeCompare(b.title);
+                return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+            });
+
+            // Update filter banner
+            const activeFilters = [];
+            if (currentScope !== 'all') activeFilters.push(`Collection: ${currentScope}`);
+            if (currentCategory) activeFilters.push(`Category: ${currentCategory}`);
+            if (currentTag) activeFilters.push(`Tag: #${currentTag}`);
+            if (langFilter) activeFilters.push(`Language: ${langFilter}`);
+            if (keyword) activeFilters.push(`Search: "${keyword}"`);
+
+            const banner = document.getElementById('activeFilterBanner');
+            if (activeFilters.length > 0) {
+                banner.classList.remove('d-none');
+                document.getElementById('activeFilterText').textContent = `Showing ${filtered.length} snippet(s) filtered by ${activeFilters.join(' • ')}`;
+            } else {
+                banner.classList.add('d-none');
+            }
+
+            const grid = document.getElementById('snippetsGrid');
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-12">
+                        <div class="p-5 text-center rounded-4 border border-secondary border-opacity-25" style="background-color: var(--bg-surface);">
+                            <i class="bi bi-search fs-1 text-secondary mb-2 d-block"></i>
+                            <h5 class="fw-bold">No Matching Code Snippets Found</h5>
+                            <p class="text-secondary small mb-3">Try clearing your search filters or create a new reusable snippet.</p>
+                            <button type="button" class="btn btn-outline-info btn-sm" onclick="clearSearchAndFilters()">Reset Filters</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(s => {
+                const langBadgeClass = LANG_COLORS[s.language] || 'bg-secondary-subtle text-light border border-secondary';
+                const tagsHtml = (s.tags || '').split(',').map(t => t.trim()).filter(Boolean).map(t => {
+                    const safeT = escapeHtml(t);
+                    return `<span class="tag-badge" onclick="setTagFilter('${safeT.replace(/'/g, "\\'")}')">#${safeT}</span>`;
+                }).join(' ');
+
+                return `
+                    <div class="col-md-6">
+                        <div class="snippet-card p-3">
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="lang-badge ${langBadgeClass}">${escapeHtml(s.language)}</span>
+                                        <span class="badge bg-dark border border-secondary text-secondary fw-normal">${escapeHtml(s.category)}</span>
+                                        ${s.sharedWithTeam ? '<span class="badge bg-success-subtle text-success border border-success-subtle" title="Shared with team"><i class="bi bi-people-fill"></i> Team</span>' : ''}
+                                    </div>
+                                    <h6 class="fw-bold text-white mb-0">${escapeHtml(s.title)}</h6>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link p-1 ${s.favorite ? 'text-warning' : 'text-secondary'}" onclick="toggleFavoriteSnippet(${s.id})" title="Toggle favorite">
+                                    <i class="bi ${s.favorite ? 'bi-star-fill' : 'bi-star'} fs-5"></i>
+                                </button>
+                            </div>
+
+                            <p class="text-secondary small mb-2">${escapeHtml(s.description || '')}</p>
+
+                            <div class="code-block-wrapper mb-3 flex-grow-1">
+                                <div class="code-block-header">
+                                    <span><i class="bi bi-person-circle me-1"></i>${escapeHtml(s.author || 'Team Developer')}</span>
+                                    <span><i class="bi bi-clipboard-check me-1"></i><span id="copyCount_${s.id}">${s.copyCount || 0}</span> copies</span>
+                                </div>
+                                <pre class="code-pre"><code>${escapeHtml(s.codeContent)}</code></pre>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-1 mb-3">${tagsHtml}</div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25 mt-auto">
+                                <button type="button" class="btn btn-sm btn-info text-dark fw-semibold px-3" onclick="copySnippetCode(${s.id})">
+                                    <i class="bi bi-clipboard me-1"></i> Copy Code
+                                </button>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-secondary text-light" onclick="openShareModal(${s.id})" title="Share with Team">
+                                        <i class="bi bi-share"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary text-light" onclick="openSnippetModal(${s.id})" title="Edit Snippet">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" onclick="promptDeleteSnippet(${s.id})" title="Delete Snippet">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Copy Code Instantly & Increment Usage Counter
+        async function copySnippetCode(id) {
+            const item = snippets.find(s => s.id === id);
+            if (!item) return;
+
+            copyTextToClipboard(item.codeContent);
+            item.copyCount = (item.copyCount || 0) + 1;
+
+            if (isBackendConnected) {
+                try {
+                    const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${id}/copy`, { method: 'POST' });
+                } catch (e) {}
+            }
+            saveStoredSnippets();
+            updateKpisAndCounts();
+            const countEl = document.getElementById(`copyCount_${id}`);
+            if (countEl) countEl.textContent = item.copyCount;
+            showToast(`Copied "${item.title}" to clipboard!`, 'success');
+        }
+
+        // Toggle Favorite
+        async function toggleFavoriteSnippet(id) {
+            const item = snippets.find(s => s.id === id);
+            if (!item) return;
+            item.favorite = !item.favorite;
+
+            if (isBackendConnected) {
+                try {
+                    const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${id}/favorite`, { method: 'PATCH' });
+                } catch (e) {}
+            }
+            saveStoredSnippets();
+            renderAll();
+            showToast(item.favorite ? 'Added to starred favorites' : 'Removed from favorites', 'info');
+        }
+
+        // Open Create / Edit Modal
+        function openSnippetModal(id = null) {
+            const form = document.getElementById('snippetForm');
+            form.reset();
+            if (id) {
+                const item = snippets.find(s => s.id === id);
+                if (!item) return;
+                document.getElementById('snippetModalTitle').textContent = 'Edit Code Snippet';
+                document.getElementById('snippetIdInput').value = item.id;
+                document.getElementById('titleInput').value = item.title;
+                document.getElementById('languageInput').value = item.language;
+                document.getElementById('categoryInput').value = item.category;
+                document.getElementById('authorInput').value = item.author || 'Team Developer';
+                document.getElementById('tagsInput').value = item.tags || '';
+                document.getElementById('descriptionInput').value = item.description || '';
+                document.getElementById('codeContentInput').value = item.codeContent;
+                document.getElementById('favoriteInput').checked = !!item.favorite;
+                document.getElementById('sharedInput').checked = !!item.sharedWithTeam;
+            } else {
+                document.getElementById('snippetModalTitle').textContent = 'Create Reusable Code Snippet';
+                document.getElementById('snippetIdInput').value = '';
+                document.getElementById('authorInput').value = 'Aarav Sharma';
+                document.getElementById('sharedInput').checked = true;
+            }
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('snippetModal'));
+            modal.show();
+        }
+
+        // Save (Create or Update) Snippet
+        async function saveSnippet(event) {
+            event.preventDefault();
+            const idVal = document.getElementById('snippetIdInput').value;
+            const payload = {
+                title: document.getElementById('titleInput').value.trim(),
+                language: document.getElementById('languageInput').value,
+                category: document.getElementById('categoryInput').value,
+                author: document.getElementById('authorInput').value.trim() || 'Team Developer',
+                tags: document.getElementById('tagsInput').value.trim(),
+                description: document.getElementById('descriptionInput').value.trim(),
+                codeContent: document.getElementById('codeContentInput').value,
+                favorite: document.getElementById('favoriteInput').checked,
+                sharedWithTeam: document.getElementById('sharedInput').checked
+            };
+
+            if (idVal) {
+                const numId = Number(idVal);
+                const idx = snippets.findIndex(s => s.id === numId);
+                if (idx !== -1) {
+                    snippets[idx] = { ...snippets[idx], ...payload, updatedAt: new Date().toISOString() };
+                }
+                if (isBackendConnected) {
+                    try {
+                        const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${numId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    } catch (e) {}
+                }
+                showToast(`Updated snippet "${payload.title}"`, 'success');
+            } else {
+                const newId = snippets.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                const newSnippet = {
+                    id: newId,
+                    ...payload,
+                    shareToken: 'shr-' + Math.random().toString(36).substring(2, 9),
+                    copyCount: 0,
+                    updatedAt: new Date().toISOString()
+                };
+                if (isBackendConnected) {
+                    try {
+                        const apiRoot = '/api/snippets'; const res = await window.fetch(apiRoot, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (res.ok) {
+                            const created = await res.json();
+                            snippets.unshift(created);
+                        } else {
+                            snippets.unshift(newSnippet);
+                        }
+                    } catch (e) {
+                        snippets.unshift(newSnippet);
+                    }
+                } else {
+                    snippets.unshift(newSnippet);
+                }
+                showToast(`Saved new snippet "${payload.title}"`, 'success');
+            }
+
+            saveStoredSnippets();
+            renderAll();
+            bootstrap.Modal.getInstance(document.getElementById('snippetModal')).hide();
+        }
+
+        // Delete Snippet Modal Flow
+        function promptDeleteSnippet(id) {
+            const item = snippets.find(s => s.id === id);
+            if (!item) return;
+            pendingDeleteId = id;
+            document.getElementById('deleteModalTitle').textContent = item.title;
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmModal')).show();
+        }
+
+        async function confirmDeleteSnippet() {
+            if (!pendingDeleteId) return;
+            const id = pendingDeleteId;
+            snippets = snippets.filter(s => s.id !== id);
+            if (isBackendConnected) {
+                try {
+                    const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${id}`, { method: 'DELETE' });
+                } catch (e) {}
+            }
+            saveStoredSnippets();
+            renderAll();
+            bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
+            showToast('Snippet deleted', 'warning');
+            pendingDeleteId = null;
+        }
+
+        // Share Snippet Modal Flow
+        function openShareModal(id) {
+            const item = snippets.find(s => s.id === id);
+            if (!item) return;
+            document.getElementById('shareModalSnippetTitle').textContent = `${item.title} (${item.language} • ${item.category})`;
+            const shareUrl = `http://localhost:8080/api/snippets/share/${item.shareToken || 'sb-exc-001'}`;
+            document.getElementById('shareUrlInput').value = shareUrl;
+            const md = `### ${item.title} (${item.language})\n> ${item.description || ''}\n\`\`\`${item.language.toLowerCase()}\n${item.codeContent}\n\`\`\``;
+            document.getElementById('shareMarkdownInput').value = md;
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('shareModal')).show();
+        }
+
+        function copyShareUrl() {
+            const val = document.getElementById('shareUrlInput').value;
+            copyTextToClipboard(val);
+            showToast('Team share URL copied to clipboard!', 'info');
+        }
+
+        function copyShareMarkdown() {
+            const val = document.getElementById('shareMarkdownInput').value;
+            copyTextToClipboard(val);
+            showToast('Markdown snippet copied for team chat!', 'success');
+        }
+
+        // Export & Reset Utilities
+        function exportSnippetsJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snippets, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "reusable_code_snippets_backup.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast('Exported snippets JSON backup', 'info');
+        }
+
+        function resetDemoData() {
+            snippets = JSON.parse(JSON.stringify(SEED_SNIPPETS));
+            saveStoredSnippets();
+            clearSearchAndFilters();
+            showToast('Restored default seed snippets', 'info');
+        }
+
+        // REST API Simulator Logic
+        function loadApiPreset() {
+            const preset = document.getElementById('apiPresetSelect').value;
+            const methodInput = document.getElementById('apiMethodInput');
+            const endpointInput = document.getElementById('apiEndpointInput');
+            const payloadInput = document.getElementById('apiPayloadInput');
+
+            if (preset === 'GET_ALL') {
+                methodInput.value = 'GET';
+                endpointInput.value = '/api/snippets?language=Java';
+                payloadInput.value = '';
+            } else if (preset === 'GET_STATS') {
+                methodInput.value = 'GET';
+                endpointInput.value = '/api/snippets/stats';
+                payloadInput.value = '';
+            } else if (preset === 'POST_CREATE') {
+                methodInput.value = 'POST';
+                endpointInput.value = '/api/snippets';
+                payloadInput.value = JSON.stringify({
+                    title: "Spring Data JPA Specification Filter",
+                    language: "Java",
+                    category: "Database & Queries",
+                    tags: "jpa,specification,dynamic-query",
+                    description: "Dynamic predicate builder for multi-criteria search.",
+                    codeContent: "public static Specification<Snippet> hasLanguage(String lang) {\n    return (root, query, cb) -> cb.equal(root.get(\"language\"), lang);\n}",
+                    author: "Vikram Menon",
+                    favorite: true,
+                    sharedWithTeam: true
+                }, null, 2);
+            } else if (preset === 'PATCH_FAV') {
+                methodInput.value = 'PATCH';
+                endpointInput.value = '/api/snippets/1/favorite';
+                payloadInput.value = '';
+            } else if (preset === 'POST_COPY') {
+                methodInput.value = 'POST';
+                endpointInput.value = '/api/snippets/1/copy';
+                payloadInput.value = '';
+            } else if (preset === 'GET_SHARE') {
+                methodInput.value = 'GET';
+                endpointInput.value = '/api/snippets/share/sb-exc-001';
+                payloadInput.value = '';
+            }
+        }
+
+        function executeSimulatedApiCall() {
+            const method = document.getElementById('apiMethodInput').value;
+            const uri = document.getElementById('apiEndpointInput').value;
+            const bodyRaw = document.getElementById('apiPayloadInput').value;
+            const statusPill = document.getElementById('apiStatusPill');
+            const output = document.getElementById('apiResponseOutput');
+
+            let responseObj = {};
+            let statusText = '200 OK';
+
+            if (uri.includes('/stats')) {
+                const byLang = {};
+                snippets.forEach(s => { byLang[s.language] = (byLang[s.language] || 0) + 1; });
+                responseObj = {
+                    totalSnippets: snippets.length,
+                    favoriteCount: snippets.filter(s => s.favorite).length,
+                    sharedCount: snippets.filter(s => s.sharedWithTeam).length,
+                    totalCopies: snippets.reduce((sum, s) => sum + (s.copyCount || 0), 0),
+                    languageBreakdown: byLang
+                };
+            } else if (method === 'POST' && uri === '/api/snippets') {
+                try {
+                    const parsed = JSON.parse(bodyRaw);
+                    const newId = snippets.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                    const created = {
+                        id: newId,
+                        ...parsed,
+                        shareToken: 'shr-' + Math.random().toString(36).substring(2, 9),
+                        copyCount: 0,
+                        updatedAt: new Date().toISOString()
+                    };
+                    snippets.unshift(created);
+                    saveStoredSnippets();
+                    renderAll();
+                    responseObj = created;
+                    statusText = '201 Created';
+                    showToast('Created snippet via REST POST /api/snippets', 'success');
+                } catch (e) {
+                    statusText = '400 Bad Request';
+                    responseObj = { error: 'Invalid JSON payload', message: e.message };
+                }
+            } else if (uri.includes('/favorite')) {
+                const target = snippets[0];
+                if (target) {
+                    target.favorite = !target.favorite;
+                    saveStoredSnippets();
+                    renderAll();
+                    responseObj = target;
+                }
+            } else if (uri.includes('/copy')) {
+                const target = snippets[0];
+                if (target) {
+                    target.copyCount = (target.copyCount || 0) + 1;
+                    saveStoredSnippets();
+                    renderAll();
+                    responseObj = target;
+                }
+            } else if (uri.includes('/share/')) {
+                const token = uri.split('/share/')[1];
+                const found = snippets.find(s => s.shareToken === token) || snippets[0];
+                responseObj = found;
+            } else {
+                const langMatch = uri.match(/language=([^&]+)/);
+                if (langMatch) {
+                    const lang = decodeURIComponent(langMatch[1]);
+                    responseObj = snippets.filter(s => s.language.toLowerCase() === lang.toLowerCase());
+                } else {
+                    responseObj = snippets;
+                }
+            }
+
+            statusPill.textContent = statusText;
+            statusPill.className = statusText.startsWith('4') ? 'badge bg-danger' : 'badge bg-success';
+            output.textContent = JSON.stringify(responseObj, null, 2);
+        }
+
+        // Clipboard Helper with Fallback for Sandboxed Iframes
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+            } catch (e) {}
+            ta.remove();
+        }
+
+        // Toast Helper
+        function showToast(message, variant = 'info') {
+            const container = document.getElementById('toastContainer');
+            const id = 'toast_' + Date.now();
+            const icon = variant === 'success' ? 'bi-check-circle-fill text-success' :
+                         variant === 'warning' ? 'bi-exclamation-circle-fill text-warning' : 'bi-info-circle-fill text-info';
+            const el = document.createElement('div');
+            el.id = id;
+            el.className = 'toast align-items-center text-bg-dark border-secondary show mb-2';
+            el.setAttribute('role', 'alert');
+            el.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center gap-2">
+                        <i class="bi ${icon}"></i>
+                        <span>${escapeHtml(message)}</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('${id}').remove()" aria-label="Close"></button>
+                </div>
+            `;
+            container.appendChild(el);
+            setTimeout(() => {
+                if (document.getElementById(id)) document.getElementById(id).remove();
+            }, 3200);
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
