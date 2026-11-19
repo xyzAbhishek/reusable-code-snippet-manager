@@ -22,6 +22,8 @@ public interface SnippetRepository extends JpaRepository<Snippet, Long> {
 
     Optional<Snippet> findByShareToken(String shareToken);
 
+    Optional<Snippet> findByGithubPath(String githubPath);
+
     @Query("SELECT s FROM Snippet s WHERE " +
            "(:keyword IS NULL OR :keyword = '' OR " +
            "LOWER(s.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

@@ -29,6 +29,12 @@ public class SnippetController {
         return ResponseEntity.ok(snippetService.getAllSnippets(keyword, language, category));
     }
 
+    @PostMapping("/ai-search")
+    public ResponseEntity<List<Map<String, Object>>> aiSearchForProject(@RequestBody Map<String, String> body) {
+        String query = body.getOrDefault("query", "");
+        return ResponseEntity.ok(snippetService.aiSearchForProject(query));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Snippet> getSnippetById(@PathVariable Long id) {
         return ResponseEntity.ok(snippetService.getSnippetById(id));
@@ -48,6 +54,16 @@ public class SnippetController {
     public ResponseEntity<Snippet> createSnippet(@Valid @RequestBody SnippetRequestDTO dto) {
         Snippet created = snippetService.createSnippet(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PostMapping("/{id}/fork")
+    public ResponseEntity<Snippet> forkSnippet(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
+        String author = body != null ? body.get("author") : null;
+        String projectContext = body != null ? body.get("projectContext") : null;
+        Snippet forked = snippetService.forkSnippet(id, author, projectContext);
+        return ResponseEntity.status(HttpStatus.CREATED).body(forked);
     }
 
     @PutMapping("/{id}")

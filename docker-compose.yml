@@ -11,7 +11,7 @@ services:
       MYSQL_USER: snippet_user
       MYSQL_PASSWORD: snippet_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
@@ -36,6 +36,12 @@ services:
       SPRING_DATASOURCE_USERNAME: snippet_user
       SPRING_DATASOURCE_PASSWORD: snippet_password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      GITHUB_SYNC_ENABLED: ${GITHUB_SYNC_ENABLED:-false}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_REPO_OWNER: ${GITHUB_REPO_OWNER:-}
+      GITHUB_REPO_NAME: ${GITHUB_REPO_NAME:-}
+      GITHUB_REPO_BRANCH: ${GITHUB_REPO_BRANCH:-main}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
 
 volumes:
   mysql_data:

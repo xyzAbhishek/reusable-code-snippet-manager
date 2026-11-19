@@ -27,6 +27,20 @@ public class Snippet {
     @Column(nullable = false, length = 80)
     private String category;
 
+    @Column(length = 120)
+    private String projectContext = "General Utility";
+
+    @Column(nullable = false, length = 20)
+    private String visibility = "PUBLIC";
+
+    private Long groupId;
+
+    @Column(length = 120)
+    private String groupName;
+
+    @Column(length = 80)
+    private String ownerUsername;
+
     @Column(length = 255)
     private String tags;
 
@@ -49,6 +63,12 @@ public class Snippet {
     @Column(unique = true, length = 64)
     private String shareToken;
 
+    @Column(unique = true, length = 300)
+    private String githubPath;
+
+    @Column(length = 64)
+    private String githubSha;
+
     @Column(nullable = false)
     private int copyCount = 0;
 
@@ -58,8 +78,7 @@ public class Snippet {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Snippet() {
-    }
+    public Snippet() {}
 
     public Snippet(Long id, String title, String language, String category, String tags,
                    String description, String codeContent, String author, boolean favorite, boolean sharedWithTeam) {
@@ -85,6 +104,12 @@ public class Snippet {
         if (this.shareToken == null || this.shareToken.isBlank()) {
             this.shareToken = UUID.randomUUID().toString().substring(0, 12);
         }
+        if (this.projectContext == null || this.projectContext.isBlank()) {
+            this.projectContext = "General Utility";
+        }
+        if (this.visibility == null || this.visibility.isBlank()) {
+            this.visibility = "PUBLIC";
+        }
     }
 
     @PreUpdate
@@ -92,7 +117,6 @@ public class Snippet {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -104,6 +128,21 @@ public class Snippet {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public String getProjectContext() { return projectContext; }
+    public void setProjectContext(String projectContext) { this.projectContext = projectContext; }
+
+    public String getVisibility() { return visibility; }
+    public void setVisibility(String visibility) { this.visibility = visibility; }
+
+    public Long getGroupId() { return groupId; }
+    public void setGroupId(Long groupId) { this.groupId = groupId; }
+
+    public String getGroupName() { return groupName; }
+    public void setGroupName(String groupName) { this.groupName = groupName; }
+
+    public String getOwnerUsername() { return ownerUsername; }
+    public void setOwnerUsername(String ownerUsername) { this.ownerUsername = ownerUsername; }
 
     public String getTags() { return tags; }
     public void setTags(String tags) { this.tags = tags; }
@@ -125,6 +164,12 @@ public class Snippet {
 
     public String getShareToken() { return shareToken; }
     public void setShareToken(String shareToken) { this.shareToken = shareToken; }
+
+    public String getGithubPath() { return githubPath; }
+    public void setGithubPath(String githubPath) { this.githubPath = githubPath; }
+
+    public String getGithubSha() { return githubSha; }
+    public void setGithubSha(String githubSha) { this.githubSha = githubSha; }
 
     public int getCopyCount() { return copyCount; }
     public void setCopyCount(int copyCount) { this.copyCount = copyCount; }

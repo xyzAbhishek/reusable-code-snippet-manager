@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS snippets (
     title VARCHAR(150) NOT NULL,
     language VARCHAR(50) NOT NULL,
     category VARCHAR(80) NOT NULL,
+    project_context VARCHAR(120) DEFAULT 'General Utility',
     tags VARCHAR(255),
     description VARCHAR(500),
     code_content TEXT NOT NULL,
@@ -15,5 +16,6 @@ CREATE TABLE IF NOT EXISTS snippets (
     share_token VARCHAR(64) UNIQUE,
     copy_count INT NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FULLTEXT INDEX idx_snippet_search (title, description, tags, code_content)
 );

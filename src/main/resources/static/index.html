@@ -1,181 +1,129 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reusable Code Snippet Manager | Full-Stack Developer Platform</title>
-    <!-- Bootstrap 5.3.3 CSS & Bootstrap Icons -->
+    <title>SnippetVault — Reusable Code Snippet Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- Google Fonts: Inter & JetBrains Mono -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0b1120;
-            --bg-surface: #111827;
-            --bg-card: #1e293b;
-            --border-subtle: #334155;
-            --accent-cyan: #38bdf8;
-            --accent-indigo: #6366f1;
-            --accent-emerald: #10b981;
-            --code-surface: #090d16;
+        :root, [data-bs-theme="light"] {
+            --sv-bg: #f8fafc;
+            --sv-surface: #ffffff;
+            --sv-border: #e2e8f0;
+            --sv-text: #0f172a;
+            --sv-muted: #64748b;
+            --sv-code-bg: #f1f5f9;
+            --sv-code-text: #0f172a;
+            --sv-accent: #2563eb;
+            --sv-accent-soft: rgba(37, 99, 235, 0.08);
+        }
+
+        [data-bs-theme="dark"] {
+            --sv-bg: #0f172a;
+            --sv-surface: #1e293b;
+            --sv-border: #334155;
+            --sv-text: #f8fafc;
+            --sv-muted: #94a3b8;
+            --sv-code-bg: #0b1120;
+            --sv-code-text: #e2e8f0;
+            --sv-accent: #3b82f6;
+            --sv-accent-soft: rgba(59, 130, 246, 0.14);
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: #f8fafc;
+            background-color: var(--sv-bg);
+            color: var(--sv-text);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
-            overflow-x: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        .navbar-custom {
-            background: rgba(17, 24, 39, 0.92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-subtle);
+        .sv-navbar {
+            background-color: var(--sv-surface);
+            border-bottom: 1px solid var(--sv-border);
         }
 
-        .brand-icon {
-            width: 38px;
-            height: 38px;
+        .sv-card {
+            background-color: var(--sv-surface);
+            border: 1px solid var(--sv-border);
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #0b1120;
-            font-weight: 700;
-            font-size: 1.2rem;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .stat-card {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            padding: 1.1rem 1.25rem;
-            transition: border-color 0.2s ease, transform 0.2s ease;
+        .sv-card:hover {
+            border-color: var(--sv-accent);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
         }
 
-        .stat-card:hover {
-            border-color: var(--accent-cyan);
-            transform: translateY(-2px);
+        .sv-card.shared-highlight {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
         }
 
-        .snippet-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .snippet-card:hover {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.55);
-            transform: translateY(-2px);
-        }
-
-        .code-block-wrapper {
-            background-color: var(--code-surface);
-            border: 1px solid #1e293b;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .code-block-header {
-            background: rgba(30, 41, 59, 0.65);
-            padding: 0.4rem 0.85rem;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            border-bottom: 1px solid #1e293b;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .code-pre {
-            margin: 0;
-            padding: 0.85rem;
+        .sv-code-box {
+            background-color: var(--sv-code-bg);
+            color: var(--sv-code-text);
+            border: 1px solid var(--sv-border);
+            border-radius: 8px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             line-height: 1.5;
-            color: #e2e8f0;
-            max-height: 190px;
+            padding: 0.85rem;
+            margin: 0;
+            max-height: 185px;
             overflow-y: auto;
             white-space: pre;
         }
 
-        .tag-badge {
-            background: rgba(56, 189, 248, 0.12);
-            color: #7dd3fc;
-            border: 1px solid rgba(56, 189, 248, 0.28);
-            font-size: 0.73rem;
-            font-weight: 500;
-            padding: 0.22rem 0.6rem;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .tag-badge:hover {
-            background: rgba(56, 189, 248, 0.25);
-            color: #fff;
-        }
-
-        .lang-badge {
-            font-size: 0.74rem;
-            font-weight: 600;
-            padding: 0.25rem 0.65rem;
-            border-radius: 6px;
-        }
-
-        .nav-pills .nav-link {
-            color: #cbd5e1;
-            font-weight: 500;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-        }
-
-        .nav-pills .nav-link.active {
-            background: linear-gradient(135deg, var(--accent-indigo), #4f46e5);
-            color: #fff;
-        }
-
-        .sidebar-filter-btn {
+        .sv-sidebar-btn {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
             text-align: left;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-            border: 1px solid transparent;
+            padding: 0.42rem 0.65rem;
+            border-radius: 7px;
+            border: none;
             background: transparent;
-            color: #cbd5e1;
-            font-size: 0.88rem;
-            transition: all 0.15s ease;
+            color: var(--sv-text);
+            font-size: 0.86rem;
         }
 
-        .sidebar-filter-btn:hover, .sidebar-filter-btn.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-color: rgba(99, 102, 241, 0.4);
-            color: #fff;
+        .sv-sidebar-btn:hover, .sv-sidebar-btn.active {
+            background-color: var(--sv-accent-soft);
+            color: var(--sv-accent);
+            font-weight: 600;
         }
 
-        .api-log-box {
-            background: var(--code-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            max-height: 360px;
-            overflow-y: auto;
-            padding: 1rem;
+        .sv-tag {
+            background-color: var(--sv-accent-soft);
+            color: var(--sv-accent);
+            font-size: 0.72rem;
+            font-weight: 500;
+            padding: 0.16rem 0.52rem;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .sv-auth-wrapper {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .sv-auth-card {
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--sv-surface);
+            border: 1px solid var(--sv-border);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
 
         .toast-container-custom {
@@ -188,411 +136,361 @@
 </head>
 <body>
 
-    <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-2">
-        <div class="container-fluid px-3 px-lg-4">
-            <div class="d-flex align-items-center gap-2">
-                <span class="brand-icon"><i class="bi bi-braces-asterisk"></i></span>
-                <div>
-                    <span class="fw-bold fs-5 text-white d-block lh-1">SnippetVault</span>
-                    <small class="text-secondary" style="font-size: 0.72rem;">Spring Boot 3 + MySQL 8 + Bootstrap 5</small>
-                </div>
-            </div>
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg sv-navbar sticky-top py-2">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#" onclick="return false;">
+                <span class="bg-primary text-white rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="bi bi-code-slash"></i>
+                </span>
+                <span>SnippetVault</span>
+            </a>
 
-            <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse mt-2 mt-lg-0" id="mainNavbar">
-                <!-- View Switcher Tabs -->
-                <ul class="nav nav-pills mx-auto gap-1 mb-2 mb-lg-0" id="viewTabs">
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto ms-lg-3 gap-1 d-none" id="navLinksGroup">
                     <li class="nav-item">
-                        <button type="button" class="nav-link active" id="tabBtnWorkspace" onclick="switchView('workspace')">
-                            <i class="bi bi-grid-1x2 me-1"></i> Snippet Library
+                        <button type="button" class="btn btn-sm btn-link nav-link px-2 fw-medium active" id="tabBtnWorkspace" onclick="switchView('workspace')">Snippets</button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-sm btn-link nav-link px-2 fw-medium" id="tabBtnAiSearch" onclick="switchView('aisearch')">
+                            <i class="bi bi-stars text-primary me-1"></i>AI Project Search
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button type="button" class="nav-link" id="tabBtnApiTester" onclick="switchView('apitester')">
-                            <i class="bi bi-hdd-network me-1"></i> REST API &amp; Postman Simulator
+                        <button type="button" class="btn btn-sm btn-link nav-link px-2 fw-medium" id="tabBtnGroups" onclick="switchView('groups')">
+                            Groups (<span id="myGroupsCountBadge">0</span>)
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button type="button" class="nav-link" id="tabBtnArchitecture" onclick="switchView('architecture')">
-                            <i class="bi bi-diagram-3 me-1"></i> Project Structure &amp; Setup Guide
-                        </button>
+                        <button type="button" class="btn btn-sm btn-link nav-link px-2 fw-medium" id="tabBtnApiTester" onclick="switchView('apitester')">REST API</button>
                     </li>
                 </ul>
 
-                <!-- Right Actions -->
-                <div class="d-flex align-items-center gap-2">
-                    <span id="backendStatusBadge" class="badge bg-success-subtle text-success border border-success-subtle py-2 px-2">
-                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i> Engine Ready
-                    </span>
-                    <button type="button" class="btn btn-info btn-sm fw-semibold text-dark px-3" onclick="openSnippetModal()">
-                        <i class="bi bi-plus-lg me-1"></i> New Snippet
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <span id="backendStatusBadge" class="badge text-bg-secondary fw-normal d-none d-md-inline-block">Local Mode</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light / Dark theme">
+                        <i class="bi bi-moon-stars" id="themeIcon"></i>
+                        <span class="d-none d-sm-inline ms-1" id="themeLabel">Dark</span>
                     </button>
+
+                    <div id="userMenuGroup" class="d-none d-flex align-items-center gap-2">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i><span id="currentUserDisplay">Account</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item small" type="button" onclick="openChangePasswordModal()"><i class="bi bi-key me-2"></i>Change Password</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button class="dropdown-item small text-danger" type="button" onclick="logoutUser()"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</button></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary fw-medium" onclick="openSnippetModal()">
+                            <i class="bi bi-plus-lg me-1"></i>New Snippet
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Container -->
-    <div class="container-fluid px-3 px-lg-4 py-4">
-
-        <!-- ==================== VIEW 1: SNIPPET LIBRARY WORKSPACE ==================== -->
-        <div id="viewWorkspace">
-            <!-- KPI Row -->
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-secondary small fw-medium">Total Snippets</div>
-                                <div class="fs-3 fw-bold text-white" id="kpiTotal">0</div>
-                            </div>
-                            <div class="fs-2 text-info opacity-75"><i class="bi bi-code-square"></i></div>
-                        </div>
-                    </div>
+    <!-- ==================== AUTH SCREEN (NO DEFAULT PASSWORDS OR USERNAMES) ==================== -->
+    <section id="authSection" class="sv-auth-wrapper">
+        <div class="sv-auth-card">
+            <div class="text-center mb-4">
+                <div class="bg-primary text-white rounded-3 d-inline-flex align-items-center justify-content-center mb-2" style="width: 44px; height: 44px;">
+                    <i class="bi bi-braces fs-5"></i>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-secondary small fw-medium">Languages Covered</div>
-                                <div class="fs-3 fw-bold text-white" id="kpiLanguages">0</div>
-                            </div>
-                            <div class="fs-2 text-primary opacity-75"><i class="bi bi-terminal"></i></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-secondary small fw-medium">Starred Favorites</div>
-                                <div class="fs-3 fw-bold text-warning" id="kpiFavorites">0</div>
-                            </div>
-                            <div class="fs-2 text-warning opacity-75"><i class="bi bi-star-fill"></i></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-secondary small fw-medium">Total Code Copies</div>
-                                <div class="fs-3 fw-bold text-success" id="kpiCopies">0</div>
-                            </div>
-                            <div class="fs-2 text-success opacity-75"><i class="bi bi-clipboard-check"></i></div>
-                        </div>
-                    </div>
-                </div>
+                <h4 class="fw-bold mb-1">SnippetVault</h4>
+                <p class="text-secondary small mb-0">Sign in or create an account to access snippets &amp; project groups</p>
             </div>
 
+            <ul class="nav nav-pills nav-fill mb-3 bg-body-tertiary p-1 rounded-3">
+                <li class="nav-item">
+                    <button type="button" class="nav-link active py-1 small fw-semibold" id="authTabLogin" onclick="switchAuthTab('login')">Sign In</button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link py-1 small fw-semibold" id="authTabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+                </li>
+            </ul>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold" for="loginUsernameInput">Username or Full Name</label>
+                    <input type="text" id="loginUsernameInput" class="form-control" placeholder="Enter your registered username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold" for="loginPasswordInput">Password</label>
+                    <input type="password" id="loginPasswordInput" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div id="loginErrorBox" class="alert alert-danger py-2 small d-none"></div>
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Sign In</button>
+                <p class="text-center text-secondary small mt-3 mb-0">
+                    New here? Switch to the <strong>Sign Up</strong> tab above to register your account.
+                </p>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="d-none" onsubmit="handleSignup(event)">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold" for="signupNameInput">Full Name</label>
+                    <input type="text" id="signupNameInput" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold" for="signupUsernameInput">Username</label>
+                    <input type="text" id="signupUsernameInput" class="form-control" placeholder="Choose a unique username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold" for="signupPasswordInput">Password</label>
+                    <input type="password" id="signupPasswordInput" class="form-control" placeholder="Minimum 4 characters" required minlength="4">
+                </div>
+                <div id="signupErrorBox" class="alert alert-danger py-2 small d-none"></div>
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Create Account</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ==================== MAIN APP WORKSPACE ==================== -->
+    <main id="appMainSection" class="container py-4 d-none">
+
+        <div id="sharedModeBanner" class="d-none alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <div class="small">
+                <i class="bi bi-link-45deg me-1"></i>
+                <strong>Shared Snippet:</strong> Inspect, <strong>Edit</strong>, or <strong>Fork</strong> this snippet for your project.
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="exitSharedMode()">Show All Snippets</button>
+        </div>
+
+        <!-- VIEW 1: SNIPPET LIBRARY -->
+        <div id="viewWorkspace">
             <div class="row g-4">
-                <!-- Left Sidebar: Categories, Collections & Quick Filters -->
+                <!-- Left Sidebar: Visibility Scopes, My Groups, Categories, Tags -->
                 <div class="col-lg-3">
-                    <div class="p-3 rounded-4 border border-secondary border-opacity-25" style="background-color: var(--bg-surface);">
-                        <h6 class="text-uppercase text-secondary fw-bold small mb-3">Collections</h6>
-                        <div class="d-grid gap-1 mb-4">
-                            <button type="button" class="sidebar-filter-btn active" id="filterScopeAll" onclick="setScopeFilter('all')">
-                                <span><i class="bi bi-collection me-2 text-info"></i>All Snippets</span>
-                                <span class="badge bg-secondary rounded-pill" id="countAll">0</span>
-                            </button>
-                            <button type="button" class="sidebar-filter-btn" id="filterScopeFav" onclick="setScopeFilter('favorites')">
-                                <span><i class="bi bi-star-fill me-2 text-warning"></i>Starred Favorites</span>
-                                <span class="badge bg-secondary rounded-pill" id="countFav">0</span>
-                            </button>
-                            <button type="button" class="sidebar-filter-btn" id="filterScopeTeam" onclick="setScopeFilter('team')">
-                                <span><i class="bi bi-people-fill me-2 text-success"></i>Shared with Team</span>
-                                <span class="badge bg-secondary rounded-pill" id="countTeam">0</span>
-                            </button>
+                    <div class="sv-card p-3 mb-3">
+                        <div class="small text-secondary fw-semibold text-uppercase mb-2">Visibility Scope</div>
+                        <button type="button" class="sv-sidebar-btn active" id="visBtnALL" onclick="setVisibilityFilter('ALL')">
+                            <span>All Accessible</span>
+                            <span class="badge text-bg-secondary rounded-pill" id="countAll">0</span>
+                        </button>
+                        <button type="button" class="sv-sidebar-btn" id="visBtnGLOBAL" onclick="setVisibilityFilter('GLOBAL')">
+                            <span><i class="bi bi-globe me-1"></i>Global</span>
+                            <span class="badge text-bg-secondary rounded-pill" id="countGlobal">0</span>
+                        </button>
+                        <button type="button" class="sv-sidebar-btn" id="visBtnPUBLIC" onclick="setVisibilityFilter('PUBLIC')">
+                            <span><i class="bi bi-people me-1"></i>Public</span>
+                            <span class="badge text-bg-secondary rounded-pill" id="countPublic">0</span>
+                        </button>
+                        <button type="button" class="sv-sidebar-btn" id="visBtnGROUP" onclick="setVisibilityFilter('GROUP')">
+                            <span><i class="bi bi-diagram-3 me-1"></i>Group</span>
+                            <span class="badge text-bg-secondary rounded-pill" id="countGroup">0</span>
+                        </button>
+                        <button type="button" class="sv-sidebar-btn" id="visBtnLOCAL" onclick="setVisibilityFilter('LOCAL')">
+                            <span><i class="bi bi-laptop me-1"></i>Local</span>
+                            <span class="badge text-bg-secondary rounded-pill" id="countLocal">0</span>
+                        </button>
+                        <button type="button" class="sv-sidebar-btn" id="visBtnPRIVATE" onclick="setVisibilityFilter('PRIVATE')">
+                            <span><i class="bi bi-lock me-1"></i>Private</span>
+                            <span class="badge text-bg-secondary rounded-pill" id="countPrivate">0</span>
+                        </button>
+
+                        <hr class="my-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small text-secondary fw-semibold text-uppercase">Your Groups</span>
+                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="switchView('groups')">Manage</button>
                         </div>
+                        <div id="sidebarMyGroupsList" class="d-grid gap-1 mb-3"></div>
 
-                        <h6 class="text-uppercase text-secondary fw-bold small mb-2">Categories</h6>
-                        <div class="d-grid gap-1 mb-4" id="categoryFilterList"></div>
+                        <hr class="my-3">
+                        <div class="small text-secondary fw-semibold text-uppercase mb-2">Categories</div>
+                        <div id="categoryFilterList" class="d-grid gap-1 mb-3"></div>
 
-                        <h6 class="text-uppercase text-secondary fw-bold small mb-2">Popular Tags</h6>
-                        <div class="d-flex flex-wrap gap-1 mb-4" id="popularTagsContainer"></div>
+                        <div class="small text-secondary fw-semibold text-uppercase mb-2">Popular Tags</div>
+                        <div id="popularTagsContainer" class="d-flex flex-wrap gap-1 mb-3"></div>
 
-                        <hr class="border-secondary opacity-25">
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-outline-light btn-sm" onclick="exportSnippetsJson()">
-                                <i class="bi bi-download me-1"></i> Export JSON Backup
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetDemoData()">
-                                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Seed Snippets
-                            </button>
-                        </div>
+                        <hr class="my-3">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100" onclick="exportSnippetsJson()">
+                            <i class="bi bi-download me-1"></i>Export JSON
+                        </button>
                     </div>
                 </div>
 
-                <!-- Right Main Area: Search Bar & Snippet Cards -->
+                <!-- Right Main Content -->
                 <div class="col-lg-9">
-                    <!-- Search & Filter Toolbar -->
-                    <div class="p-3 rounded-4 border border-secondary border-opacity-25 mb-3" style="background-color: var(--bg-surface);">
+                    <div class="sv-card p-3 mb-3">
                         <div class="row g-2 align-items-center">
-                            <div class="col-md-5">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
-                                    <input type="text" id="searchInput" class="form-control bg-dark border-secondary text-white" placeholder="Search title, code, tags, description..." oninput="renderSnippets()">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="clearSearchAndFilters()" title="Clear filters">
-                                        <i class="bi bi-x-lg"></i>
-                                    </button>
+                            <div class="col-md-6">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Search title, code, or lang:java tag:rest (press /)" oninput="handleSearchInput()">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearSearchAndFilters()" title="Clear"><i class="bi bi-x-lg"></i></button>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3">
-                                <select id="languageSelect" class="form-select bg-dark border-secondary text-white" aria-label="Filter by language" onchange="renderSnippets()">
+                                <select id="languageSelect" class="form-select form-select-sm" aria-label="Filter by language" onchange="renderSnippets()">
                                     <option value="">All Languages</option>
                                     <option value="Java">Java</option>
                                     <option value="JavaScript">JavaScript</option>
-                                    <option value="SQL">SQL</option>
                                     <option value="Python">Python</option>
-                                    <option value="HTML/CSS">HTML/CSS</option>
+                                    <option value="SQL">SQL</option>
                                     <option value="Dockerfile">Dockerfile</option>
                                     <option value="YAML">YAML</option>
                                     <option value="Bash">Bash</option>
+                                    <option value="HTML/CSS">HTML/CSS</option>
                                 </select>
                             </div>
-                            <div class="col-6 col-md-4">
-                                <select id="sortSelect" class="form-select bg-dark border-secondary text-white" aria-label="Sort snippets" onchange="renderSnippets()">
-                                    <option value="updated">Sort: Recently Updated</option>
+                            <div class="col-6 col-md-3">
+                                <select id="sortSelect" class="form-select form-select-sm" aria-label="Sort snippets" onchange="renderSnippets()">
+                                    <option value="relevance">Sort: Relevance</option>
+                                    <option value="updated">Sort: Recent</option>
                                     <option value="copies">Sort: Most Copied</option>
-                                    <option value="title">Sort: Title (A - Z)</option>
+                                    <option value="title">Sort: Title (A-Z)</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Active Filter Indicator -->
-                    <div id="activeFilterBanner" class="d-none alert alert-info py-2 px-3 d-flex justify-content-between align-items-center mb-3">
-                        <span id="activeFilterText" class="small"></span>
-                        <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none" onclick="clearSearchAndFilters()">Clear All</button>
+                    <div id="activeFilterBanner" class="d-none alert alert-info py-2 px-3 d-flex justify-content-between align-items-center mb-3 small">
+                        <span id="activeFilterText"></span>
+                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" onclick="clearSearchAndFilters()">Clear All</button>
                     </div>
 
-                    <!-- Snippets Grid -->
                     <div class="row g-3" id="snippetsGrid"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ==================== VIEW 2: REST API & POSTMAN SIMULATOR ==================== -->
+        <!-- VIEW 2: AI PROJECT SNIPPET SEARCHER -->
+        <div id="viewAiSearch" class="d-none">
+            <div class="sv-card p-4 mb-4">
+                <h5 class="fw-bold mb-1"><i class="bi bi-stars text-primary me-2"></i>AI Project Snippet Searcher</h5>
+                <p class="text-secondary small mb-3">Describe any new project you are starting, and our AI intent engine will assemble a recommended starter kit from your 64+ industry snippets.</p>
+                <form onsubmit="runAiProjectSearch(event)">
+                    <div class="input-group mb-2">
+                        <input type="text" id="aiProjectQueryInput" class="form-control" placeholder="e.g., Building a Spring Boot e-commerce REST API with JWT auth, MySQL pagination, Redis cache, and Docker" required>
+                        <button type="submit" class="btn btn-primary fw-semibold px-4">
+                            <i class="bi bi-magic me-1"></i>Find Starter Snippets
+                        </button>
+                    </div>
+                </form>
+                <div class="d-flex flex-wrap gap-1 mt-2">
+                    <span class="small text-secondary me-1">Try:</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.74rem;" onclick="fillAiPrompt('Spring Boot microservice with JWT auth, MySQL pagination, Docker, and GitHub Actions')">Spring Boot Microservice</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.74rem;" onclick="fillAiPrompt('React dashboard frontend with debounced search, fetch retry, CSV export, and dark mode')">React Dashboard UI</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.74rem;" onclick="fillAiPrompt('Python FastAPI backend with async httpx, Pydantic settings, pytest, and Docker')">FastAPI Backend</button>
+                </div>
+            </div>
+
+            <div id="aiResultsContainer" class="row g-3"></div>
+        </div>
+
+        <!-- VIEW 3: PROJECT GROUPS MANAGEMENT -->
+        <div id="viewGroups" class="d-none">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="sv-card p-4">
+                        <h5 class="fw-bold mb-2">Create Project Group</h5>
+                        <p class="text-secondary small mb-3">Organize team members into groups for specific projects and share group-scoped snippets.</p>
+                        <form onsubmit="createProjectGroup(event)">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold" for="groupNameInput">Group Name *</label>
+                                <input type="text" id="groupNameInput" class="form-control form-control-sm" placeholder="e.g., Backend Core Team" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold" for="groupProjectInput">Project Name *</label>
+                                <input type="text" id="groupProjectInput" class="form-control form-control-sm" placeholder="e.g., E-Commerce Platform" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold" for="groupDescInput">Description</label>
+                                <input type="text" id="groupDescInput" class="form-control form-control-sm" placeholder="Purpose of this project group">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100 fw-semibold">Create Group</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="sv-card p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-person-check text-primary me-2"></i>Groups You Are In</h5>
+                        <div id="myGroupsList" class="row g-3"></div>
+                    </div>
+
+                    <div class="sv-card p-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 text-secondary me-2"></i>All Project Groups (Add / Remove Members)</h5>
+                        <div id="allGroupsList" class="row g-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: REST API -->
         <div id="viewApiTester" class="d-none">
             <div class="row g-4">
                 <div class="col-lg-5">
-                    <div class="p-4 rounded-4 border border-secondary border-opacity-25" style="background-color: var(--bg-surface);">
-                        <h5 class="fw-bold mb-1"><i class="bi bi-send-check text-info me-2"></i>Interactive REST API Console</h5>
-                        <p class="text-secondary small mb-3">Test the Spring Boot <code>SnippetController</code> endpoints directly or inspect the bundled Postman collection.</p>
-
+                    <div class="sv-card p-4">
+                        <h5 class="fw-bold mb-2">REST API Console</h5>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-semibold" for="apiPresetSelect">Select Endpoint Preset</label>
-                            <select id="apiPresetSelect" class="form-select bg-dark border-secondary text-white" onchange="loadApiPreset()">
-                                <option value="GET_ALL">GET /api/snippets (List &amp; Filter Snippets)</option>
-                                <option value="GET_STATS">GET /api/snippets/stats (Dashboard Metrics)</option>
-                                <option value="POST_CREATE">POST /api/snippets (Create New Snippet)</option>
-                                <option value="PATCH_FAV">PATCH /api/snippets/1/favorite (Toggle Star)</option>
-                                <option value="POST_COPY">POST /api/snippets/1/copy (Increment Copy Count)</option>
-                                <option value="GET_SHARE">GET /api/snippets/share/sb-exc-001 (Lookup by Share Token)</option>
+                            <label class="form-label small fw-semibold" for="apiPresetSelect">Endpoint Preset</label>
+                            <select id="apiPresetSelect" class="form-select form-select-sm" onchange="loadApiPreset()">
+                                <option value="GET_ALL">GET /api/snippets</option>
+                                <option value="AI_SEARCH">POST /api/snippets/ai-search</option>
+                                <option value="GET_GROUPS">GET /api/groups</option>
+                                <option value="GET_STATS">GET /api/snippets/stats</option>
                             </select>
                         </div>
-
                         <div class="row g-2 mb-3">
-                            <div class="col-4">
-                                <label class="form-label small text-secondary" for="apiMethodInput">HTTP Method</label>
-                                <input type="text" id="apiMethodInput" class="form-control bg-dark border-secondary text-info fw-bold" value="GET" readonly>
-                            </div>
-                            <div class="col-8">
-                                <label class="form-label small text-secondary" for="apiEndpointInput">Endpoint URI</label>
-                                <input type="text" id="apiEndpointInput" class="form-control bg-dark border-secondary text-white" value="/api/snippets">
-                            </div>
+                            <div class="col-4"><input type="text" id="apiMethodInput" class="form-control form-control-sm fw-bold" value="GET" readonly aria-label="Method"></div>
+                            <div class="col-8"><input type="text" id="apiEndpointInput" class="form-control form-control-sm" value="/api/snippets" aria-label="URI"></div>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small text-secondary" for="apiPayloadInput">Request JSON Body (for POST/PUT)</label>
-                            <textarea id="apiPayloadInput" rows="6" class="form-control bg-dark border-secondary text-white font-monospace small" placeholder="No body required for GET/PATCH"></textarea>
-                        </div>
-
-                        <button type="button" class="btn btn-info w-100 fw-semibold text-dark" onclick="executeSimulatedApiCall()">
-                            <i class="bi bi-play-fill me-1"></i> Send API Request
-                        </button>
+                        <textarea id="apiPayloadInput" rows="4" class="form-control form-control-sm font-monospace mb-3" placeholder="JSON body"></textarea>
+                        <button type="button" class="btn btn-primary btn-sm w-100 fw-semibold" onclick="executeSimulatedApiCall()">Send Request</button>
                     </div>
                 </div>
-
                 <div class="col-lg-7">
-                    <div class="p-4 rounded-4 border border-secondary border-opacity-25 h-100" style="background-color: var(--bg-surface);">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold mb-0"><i class="bi bi-terminal-plus text-success me-2"></i>HTTP Response Inspector</h5>
-                            <span id="apiStatusPill" class="badge bg-success">200 OK</span>
-                        </div>
-                        <pre id="apiResponseOutput" class="api-log-box text-info mb-4">// Click "Send API Request" to inspect the JSON response payload...</pre>
-
-                        <h6 class="fw-bold text-white mb-2">Spring Boot REST Endpoints Reference</h6>
-                        <div class="table-responsive">
-                            <table class="table table-dark table-sm table-bordered border-secondary small align-middle mb-0">
-                                <thead>
-                                    <tr class="text-secondary">
-                                        <th>Method</th>
-                                        <th>Endpoint</th>
-                                        <th>Controller Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td><span class="badge bg-success">GET</span></td><td><code>/api/snippets</code></td><td>Search by <code>keyword</code>, <code>language</code>, <code>category</code></td></tr>
-                                    <tr><td><span class="badge bg-success">GET</span></td><td><code>/api/snippets/{id}</code></td><td>Fetch single snippet by primary key ID</td></tr>
-                                    <tr><td><span class="badge bg-success">GET</span></td><td><code>/api/snippets/share/{token}</code></td><td>Resolve team share link by unique token</td></tr>
-                                    <tr><td><span class="badge bg-primary">POST</span></td><td><code>/api/snippets</code></td><td>Validate &amp; persist new snippet in MySQL</td></tr>
-                                    <tr><td><span class="badge bg-warning text-dark">PUT</span></td><td><code>/api/snippets/{id}</code></td><td>Update existing snippet fields</td></tr>
-                                    <tr><td><span class="badge bg-info text-dark">PATCH</span></td><td><code>/api/snippets/{id}/favorite</code></td><td>Toggle favorite status</td></tr>
-                                    <tr><td><span class="badge bg-primary">POST</span></td><td><code>/api/snippets/{id}/copy</code></td><td>Increment usage copy counter</td></tr>
-                                    <tr><td><span class="badge bg-danger">DELETE</span></td><td><code>/api/snippets/{id}</code></td><td>Delete snippet record from MySQL</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="sv-card p-4 h-100">
+                        <h5 class="fw-bold mb-2">Response</h5>
+                        <pre id="apiResponseOutput" class="sv-code-box" style="max-height: 300px;">// Click "Send Request" to inspect output</pre>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- ==================== VIEW 3: ARCHITECTURE & SETUP GUIDE ==================== -->
-        <div id="viewArchitecture" class="d-none">
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="p-4 rounded-4 border border-secondary border-opacity-25 h-100" style="background-color: var(--bg-surface);">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-folder2-open text-warning me-2"></i>Organized Project Structure</h5>
-                        <pre class="api-log-box text-light mb-0">reusable-code-snippet-manager/
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yml                 # GitHub Actions CI/CD pipeline
-├── postman/
-│   └── Reusable_Code_Snippet_Manager.postman_collection.json
-├── src/
-│   ├── main/
-│   │   ├── java/com/snippetmanager/
-│   │   │   ├── SnippetManagerApplication.java
-│   │   │   ├── config/
-│   │   │   │   └── WebConfig.java    # CORS configuration
-│   │   │   ├── controller/
-│   │   │   │   └── SnippetController.java
-│   │   │   ├── dto/
-│   │   │   │   └── SnippetRequestDTO.java
-│   │   │   ├── exception/
-│   │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   │   └── ResourceNotFoundException.java
-│   │   │   ├── model/
-│   │   │   │   └── Snippet.java      # JPA Entity (@Table("snippets"))
-│   │   │   ├── repository/
-│   │   │   │   └── SnippetRepository.java
-│   │   │   └── service/
-│   │   │       └── SnippetService.java
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       ├── schema.sql            # MySQL table creation DDL
-│   │       ├── data.sql              # Seed code snippets
-│   │       └── static/               # Frontend (HTML, CSS, JS, Bootstrap)
-│   │           ├── index.html
-│   │           ├── css/styles.css
-│   │           └── js/app.js
-│   └── test/
-│       ├── java/com/snippetmanager/
-│       │   ├── controller/SnippetControllerTest.java
-│       │   └── service/SnippetServiceTest.java
-│       └── resources/
-│           └── application-test.properties
-├── Dockerfile                        # Multi-stage Maven + JRE 17 build
-├── docker-compose.yml                # MySQL 8.0 + Spring Boot orchestration
-├── pom.xml                           # Maven dependencies &amp; JUnit 5
-└── README.md</pre>
-                    </div>
-                </div>
-
-                <div class="col-lg-6">
-                    <div class="p-4 rounded-4 border border-secondary border-opacity-25 h-100" style="background-color: var(--bg-surface);">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-rocket-takeoff text-info me-2"></i>Step-by-Step Execution Checklist</h5>
-                        <div class="accordion accordion-flush" id="setupAccordion">
-                            <div class="accordion-item bg-transparent border-secondary">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button bg-dark text-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#step1Collapse">
-                                        1. Run Instantly with Docker Compose (Recommended)
-                                    </button>
-                                </h2>
-                                <div id="step1Collapse" class="accordion-collapse collapse show" data-bs-parent="#setupAccordion">
-                                    <div class="accordion-body text-secondary small">
-                                        Starts both MySQL 8.0 (with automatic schema &amp; seed data initialization) and the Spring Boot application container:
-                                        <pre class="bg-black text-info p-2 rounded mt-2 mb-0">docker compose up --build -d
-# Open http://localhost:8080 in your browser</pre>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="accordion-item bg-transparent border-secondary">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed bg-dark text-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#step2Collapse">
-                                        2. Run Locally with Maven, Java 17 &amp; MySQL
-                                    </button>
-                                </h2>
-                                <div id="step2Collapse" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
-                                    <div class="accordion-body text-secondary small">
-                                        Create the database in MySQL and launch Spring Boot via Maven:
-                                        <pre class="bg-black text-info p-2 rounded mt-2 mb-0">mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS snippet_manager_db;"
-mvn clean test
-mvn spring-boot:run</pre>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="accordion-item bg-transparent border-secondary">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed bg-dark text-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#step3Collapse">
-                                        3. Run JUnit 5 Tests &amp; Postman API Collection
-                                    </button>
-                                </h2>
-                                <div id="step3Collapse" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
-                                    <div class="accordion-body text-secondary small">
-                                        Execute unit and MockMvc controller tests using the H2 test profile, and import <code>postman/Reusable_Code_Snippet_Manager.postman_collection.json</code> into Postman:
-                                        <pre class="bg-black text-info p-2 rounded mt-2 mb-0">mvn test</pre>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ==================== MODAL: CREATE / EDIT SNIPPET ==================== -->
+    <!-- MODAL: CREATE / EDIT SNIPPET -->
     <div class="modal fade" id="snippetModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content bg-dark border-secondary text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title fw-bold" id="snippetModalTitle">Create Reusable Code Snippet</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="snippetModalTitle">New Code Snippet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="snippetForm" onsubmit="saveSnippet(event)">
                     <div class="modal-body">
                         <input type="hidden" id="snippetIdInput">
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <label class="form-label small text-secondary fw-semibold" for="titleInput">Snippet Title *</label>
-                                <input type="text" id="titleInput" class="form-control bg-black border-secondary text-white" required maxlength="150" placeholder="e.g., Spring Boot JWT Authentication Filter">
+                                <label class="form-label small fw-semibold" for="titleInput">Title *</label>
+                                <input type="text" id="titleInput" class="form-control" required maxlength="150">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-semibold" for="languageInput">Language *</label>
-                                <select id="languageInput" class="form-select bg-black border-secondary text-white" required>
+                                <label class="form-label small fw-semibold" for="languageInput">Language *</label>
+                                <select id="languageInput" class="form-select" required>
                                     <option value="Java">Java</option>
                                     <option value="JavaScript">JavaScript</option>
-                                    <option value="SQL">SQL</option>
                                     <option value="Python">Python</option>
-                                    <option value="HTML/CSS">HTML/CSS</option>
+                                    <option value="SQL">SQL</option>
                                     <option value="Dockerfile">Dockerfile</option>
                                     <option value="YAML">YAML</option>
                                     <option value="Bash">Bash</option>
+                                    <option value="HTML/CSS">HTML/CSS</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-semibold" for="categoryInput">Category *</label>
-                                <select id="categoryInput" class="form-select bg-black border-secondary text-white" required>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold" for="categoryInput">Category *</label>
+                                <select id="categoryInput" class="form-select" required>
                                     <option value="Backend & REST API">Backend &amp; REST API</option>
                                     <option value="Frontend & DOM">Frontend &amp; DOM</option>
                                     <option value="Database & Queries">Database &amp; Queries</option>
@@ -602,610 +500,1016 @@ mvn spring-boot:run</pre>
                                     <option value="Testing & JUnit">Testing &amp; JUnit</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold" for="visibilityInput">Visibility Scope *</label>
+                                <select id="visibilityInput" class="form-select" onchange="toggleGroupSelectorInModal()">
+                                    <option value="GLOBAL">Global (All Teams)</option>
+                                    <option value="PUBLIC">Public (Everyone)</option>
+                                    <option value="GROUP">Group (Project Group Only)</option>
+                                    <option value="LOCAL">Local (My Workspace)</option>
+                                    <option value="PRIVATE">Private (Only Me)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-none" id="modalGroupWrapper">
+                                <label class="form-label small fw-semibold" for="groupSelectInput">Select Group</label>
+                                <select id="groupSelectInput" class="form-select"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold" for="projectContextInput">Project Context</label>
+                                <input type="text" id="projectContextInput" class="form-control" maxlength="120" value="General Utility">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold" for="authorInput">Author</label>
+                                <input type="text" id="authorInput" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold" for="tagsInput">Tags</label>
+                                <input type="text" id="tagsInput" class="form-control" placeholder="e.g., jwt, spring-boot">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold" for="descriptionInput">Description</label>
+                                <input type="text" id="descriptionInput" class="form-control" maxlength="500">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold" for="codeContentInput">Code *</label>
+                                <textarea id="codeContentInput" rows="6" class="form-control font-monospace small" required></textarea>
+                            </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-semibold" for="authorInput">Author / Team Member</label>
-                                <input type="text" id="authorInput" class="form-control bg-black border-secondary text-white" placeholder="e.g., Aarav Sharma" value="Aarav Sharma">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small text-secondary fw-semibold" for="tagsInput">Tags (comma-separated)</label>
-                                <input type="text" id="tagsInput" class="form-control bg-black border-secondary text-white" placeholder="e.g., spring-boot, rest-api, validation, mysql">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small text-secondary fw-semibold" for="descriptionInput">Description &amp; Usage Notes</label>
-                                <input type="text" id="descriptionInput" class="form-control bg-black border-secondary text-white" maxlength="500" placeholder="Brief summary of when and how to reuse this snippet">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small text-secondary fw-semibold" for="codeContentInput">Code Snippet *</label>
-                                <textarea id="codeContentInput" rows="7" class="form-control bg-black border-secondary text-info font-monospace small" required placeholder="Paste or write your reusable code here..."></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check form-switch mt-1">
+                                <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="favoriteInput">
-                                    <label class="form-check-label small" for="favoriteInput">Mark as Starred Favorite</label>
+                                    <label class="form-check-label small" for="favoriteInput">Starred Favorite</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-check form-switch mt-1">
+                                <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="sharedInput" checked>
-                                    <label class="form-check-label small" for="sharedInput">Share with Team Members</label>
+                                    <label class="form-check-label small" for="sharedInput">Sync to GitHub (if Global/Public)</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer border-secondary">
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-info fw-semibold text-dark px-4">Save Snippet</button>
+                        <button type="submit" class="btn btn-primary fw-semibold">Save Snippet</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ==================== MODAL: TEAM SHARE LINK & EMBED ==================== -->
+    <!-- MODAL: SHARE SNIPPET -->
     <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark border-secondary text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-share-fill text-info me-2"></i>Share Snippet with Team</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Share Snippet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p class="small text-secondary mb-2" id="shareModalSnippetTitle"></p>
-                    <label class="form-label small text-secondary fw-semibold" for="shareUrlInput">Direct REST Share URL</label>
                     <div class="input-group mb-3">
-                        <input type="text" id="shareUrlInput" class="form-control bg-black border-secondary text-info font-monospace small" readonly>
-                        <button class="btn btn-info text-dark fw-semibold" type="button" onclick="copyShareUrl()">
-                            <i class="bi bi-clipboard me-1"></i> Copy Link
-                        </button>
+                        <input type="text" id="shareUrlInput" class="form-control font-monospace small" readonly aria-label="Share URL">
+                        <button class="btn btn-primary" type="button" onclick="copyShareUrl()">Copy Link</button>
                     </div>
-                    <label class="form-label small text-secondary fw-semibold" for="shareMarkdownInput">Markdown Snippet for Team Chat / PRs</label>
-                    <textarea id="shareMarkdownInput" rows="5" class="form-control bg-black border-secondary text-light font-monospace small" readonly></textarea>
-                    <button class="btn btn-outline-info btn-sm w-100 mt-2" type="button" onclick="copyShareMarkdown()">
-                        <i class="bi bi-markdown me-1"></i> Copy Markdown Block
-                    </button>
+                    <textarea id="shareMarkdownInput" rows="4" class="form-control font-monospace small mb-2" readonly aria-label="Markdown"></textarea>
+                    <button class="btn btn-outline-secondary btn-sm w-100" type="button" onclick="copyShareMarkdown()">Copy Markdown</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== MODAL: DELETE CONFIRMATION ==================== -->
+    <!-- MODAL: CHANGE PASSWORD -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title fw-bold">Change Password</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="handleChangePassword(event)">
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold" for="currentPwdInput">Current Password</label>
+                            <input type="password" id="currentPwdInput" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold" for="newPwdInput">New Password</label>
+                            <input type="password" id="newPwdInput" class="form-control form-control-sm" required minlength="4">
+                        </div>
+                        <div id="changePwdError" class="alert alert-danger py-1 px-2 small d-none"></div>
+                    </div>
+                    <div class="modal-footer py-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DELETE CONFIRMATION -->
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content bg-dark border-secondary text-white">
-                <div class="modal-header border-secondary py-2">
-                    <h6 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Confirm Delete</h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h6 class="modal-title fw-bold text-danger">Delete Snippet</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body small text-secondary">
-                    Are you sure you want to delete <strong class="text-white" id="deleteModalTitle"></strong>?
-                </div>
-                <div class="modal-footer border-secondary py-2">
+                <div class="modal-body small">Delete <strong id="deleteModalTitle"></strong>?</div>
+                <div class="modal-footer py-2">
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn" onclick="confirmDeleteSnippet()">Delete</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteSnippet()">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
     <div class="toast-container-custom" id="toastContainer"></div>
 
-    <!-- Bootstrap 5.3.3 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Initial Seed Snippets (mirrors src/main/resources/data.sql)
-        const SEED_SNIPPETS = [
-            {
-                id: 1,
-                title: "Spring Boot Global Exception Handler",
-                language: "Java",
-                category: "Backend & REST API",
-                tags: "spring-boot,exception,rest-api,validation",
-                description: "Centralized @RestControllerAdvice exception handler for Bean Validation and 404 errors in Spring Boot 3.",
-                codeContent: "@RestControllerAdvice\npublic class GlobalExceptionHandler {\n    @ExceptionHandler(ResourceNotFoundException.class)\n    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {\n        return ResponseEntity.status(HttpStatus.NOT_FOUND)\n                .body(Map.of(\"error\", ex.getMessage()));\n    }\n}",
-                author: "Aarav Sharma",
-                favorite: true,
-                sharedWithTeam: true,
-                shareToken: "sb-exc-001",
-                copyCount: 42,
-                updatedAt: "2026-11-10T10:15:00"
-            },
-            {
-                id: 2,
-                title: "Debounced Search Input Utility",
-                language: "JavaScript",
-                category: "Frontend & DOM",
-                tags: "debounce,performance,search,events",
-                description: "Lightweight ES6 utility function to debounce rapid input events before firing REST API search calls.",
-                codeContent: "function debounce(fn, delay = 300) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn.apply(this, args), delay);\n  };\n}",
-                author: "Priya Nair",
-                favorite: true,
-                sharedWithTeam: true,
-                shareToken: "js-deb-002",
-                copyCount: 68,
-                updatedAt: "2026-11-10T11:30:00"
-            },
-            {
-                id: 3,
-                title: "MySQL Indexed Full-Text Search Query",
-                language: "SQL",
-                category: "Database & Queries",
-                tags: "mysql,indexing,search,optimization",
-                description: "Optimized MySQL query using LOWER() pattern matching across title, tags, and code content.",
-                codeContent: "SELECT id, title, language, category, tags, copy_count\nFROM snippets\nWHERE LOWER(title) LIKE CONCAT('%', LOWER(:keyword), '%')\n   OR LOWER(tags) LIKE CONCAT('%', LOWER(:keyword), '%')\nORDER BY updated_at DESC\nLIMIT 50;",
-                author: "Rohan Verma",
-                favorite: false,
-                sharedWithTeam: true,
-                shareToken: "sql-idx-003",
-                copyCount: 29,
-                updatedAt: "2026-11-09T16:45:00"
-            },
-            {
-                id: 4,
-                title: "Multi-Stage Spring Boot Dockerfile",
-                language: "Dockerfile",
-                category: "DevOps & Docker",
-                tags: "docker,maven,java-17,containers",
-                description: "Production multi-stage Dockerfile building the Maven JAR in stage 1 and running on Eclipse Temurin JRE 17 in stage 2.",
-                codeContent: "FROM maven:3.9.6-eclipse-temurin-17 AS build\nWORKDIR /app\nCOPY pom.xml .\nRUN mvn dependency:go-offline -B\nCOPY src ./src\nRUN mvn clean package -DskipTests\n\nFROM eclipse-temurin:17-jre-jammy\nWORKDIR /app\nCOPY --from=build /app/target/*.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]",
-                author: "DevOps Guild",
-                favorite: true,
-                sharedWithTeam: true,
-                shareToken: "dkr-sb-004",
-                copyCount: 54,
-                updatedAt: "2026-11-10T09:00:00"
-            },
-            {
-                id: 5,
-                title: "JUnit 5 + Mockito Service Test Template",
-                language: "Java",
-                category: "Testing & JUnit",
-                tags: "junit5,mockito,unit-test,spring-boot",
-                description: "Standard @ExtendWith(MockitoExtension.class) unit test setup verifying repository interactions.",
-                codeContent: "@ExtendWith(MockitoExtension.class)\nclass SnippetServiceTest {\n    @Mock private SnippetRepository repository;\n    @InjectMocks private SnippetService service;\n\n    @Test\n    void shouldReturnSnippetById() {\n        when(repository.findById(1L)).thenReturn(Optional.of(new Snippet()));\n        assertNotNull(service.getSnippetById(1L));\n    }\n}",
-                author: "Ananya Iyer",
-                favorite: false,
-                sharedWithTeam: true,
-                shareToken: "ju5-tst-005",
-                copyCount: 37,
-                updatedAt: "2026-11-08T14:20:00"
-            },
-            {
-                id: 6,
-                title: "Python Retry Decorator with Backoff",
-                language: "Python",
-                category: "Algorithms & Utils",
-                tags: "python,decorator,retry,resilience",
-                description: "Reusable decorator that retries transient network exceptions with exponential backoff.",
-                codeContent: "import time, functools\n\ndef retry(times=3, delay=1.0):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(1, times + 1):\n                try:\n                    return func(*args, **kwargs)\n                except Exception:\n                    if attempt == times: raise\n                    time.sleep(delay * attempt)\n        return wrapper\n    return decorator",
-                author: "Karthik Rao",
-                favorite: false,
-                sharedWithTeam: true,
-                shareToken: "py-ret-006",
-                copyCount: 23,
-                updatedAt: "2026-11-07T18:10:00"
-            }
-        ];
+        const SEED_SNIPPETS = [{"id": 1, "title": "Spring Boot Global Exception Handler", "language": "Java", "category": "Backend & REST API", "projectContext": "Microservice Core", "visibility": "GLOBAL", "tags": "spring-boot,exception,rest-api,validation", "description": "Centralized @RestControllerAdvice handler for 404 and Bean Validation errors.", "codeContent": "@RestControllerAdvice\npublic class GlobalExceptionHandler {\n    @ExceptionHandler(ResourceNotFoundException.class)\n    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {\n        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(\"error\", ex.getMessage()));\n    }\n}", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 42}, {"id": 2, "title": "JWT Authentication Filter (Spring Security)", "language": "Java", "category": "Security & Auth", "projectContext": "Auth Gateway", "visibility": "GLOBAL", "tags": "jwt,spring-security,filter,auth,token", "description": "OncePerRequestFilter extracting Bearer JWT tokens and setting SecurityContext.", "codeContent": "public class JwtAuthFilter extends OncePerRequestFilter {\n    @Override\n    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)\n            throws ServletException, IOException {\n        String header = req.getHeader(\"Authorization\");\n        if (header != null && header.startsWith(\"Bearer \")) {\n            // Validate token and populate SecurityContextHolder\n        }\n        chain.doFilter(req, res);\n    }\n}", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 58}, {"id": 3, "title": "Spring Data JPA Pagination & Sorting", "language": "Java", "category": "Database & Queries", "projectContext": "E-Commerce API", "visibility": "PUBLIC", "tags": "jpa,pagination,pageable,sorting,spring-boot", "description": "Paginated REST endpoint using Pageable and Page<T> response.", "codeContent": "@GetMapping(\"/paged\")\npublic Page<Snippet> listPaged(\n        @RequestParam(defaultValue = \"0\") int page,\n        @RequestParam(defaultValue = \"20\") int size) {\n    Pageable pageable = PageRequest.of(page, size, Sort.by(\"updatedAt\").descending());\n    return snippetRepository.findAll(pageable);\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 31}, {"id": 4, "title": "Spring WebClient Non-Blocking HTTP Call", "language": "Java", "category": "Backend & REST API", "projectContext": "Payment Gateway", "visibility": "GLOBAL", "tags": "webclient,reactive,http,timeout,retry", "description": "Resilient WebClient GET call with 5s timeout and 2 retries.", "codeContent": "Mono<String> response = webClient.get()\n    .uri(\"https://api.example.com/v1/orders/{id}\", orderId)\n    .retrieve()\n    .bodyToMono(String.class)\n    .timeout(Duration.ofSeconds(5))\n    .retry(2);", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 27}, {"id": 5, "title": "CompletableFuture Parallel Fan-Out", "language": "Java", "category": "Algorithms & Utils", "projectContext": "Aggregator Service", "visibility": "PUBLIC", "tags": "concurrency,async,completablefuture,performance", "description": "Run multiple independent service calls concurrently and combine results.", "codeContent": "CompletableFuture<User> userF = CompletableFuture.supplyAsync(() -> userService.get(id));\nCompletableFuture<List<Order>> ordersF = CompletableFuture.supplyAsync(() -> orderService.list(id));\nCompletableFuture.allOf(userF, ordersF).join();\nreturn new DashboardDTO(userF.join(), ordersF.join());", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 49}, {"id": 6, "title": "Spring Boot CORS Global Configuration", "language": "Java", "category": "Security & Auth", "projectContext": "API Gateway", "visibility": "GLOBAL", "tags": "cors,security,webmvcconfigurer,rest-api", "description": "Allow cross-origin requests from frontend origins safely.", "codeContent": "@Configuration\npublic class CorsConfig implements WebMvcConfigurer {\n    @Override\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/api/**\")\n            .allowedOrigins(\"https://app.example.com\", \"http://localhost:3000\")\n            .allowedMethods(\"GET\", \"POST\", \"PUT\", \"DELETE\", \"OPTIONS\");\n    }\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 36}, {"id": 7, "title": "Redis Cacheable Service Method", "language": "Java", "category": "Backend & REST API", "projectContext": "High-Traffic Catalog", "visibility": "PUBLIC", "tags": "redis,caching,spring-cache,performance", "description": "Cache expensive database lookups using @Cacheable and @CacheEvict.", "codeContent": "@Cacheable(value = \"products\", key = \"#id\")\npublic Product getProduct(Long id) {\n    return productRepository.findById(id).orElseThrow();\n}\n\n@CacheEvict(value = \"products\", key = \"#id\")\npublic void invalidateProduct(Long id) {}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 33}, {"id": 8, "title": "JUnit 5 + Mockito Service Unit Test", "language": "Java", "category": "Testing & JUnit", "projectContext": "Core Testing", "visibility": "GLOBAL", "tags": "junit5,mockito,unit-test,tdd", "description": "Clean @ExtendWith(MockitoExtension.class) test verifying repository calls.", "codeContent": "@ExtendWith(MockitoExtension.class)\nclass OrderServiceTest {\n    @Mock private OrderRepository repo;\n    @InjectMocks private OrderService service;\n    @Test\n    void shouldFindOrder() {\n        when(repo.findById(1L)).thenReturn(Optional.of(new Order()));\n        assertNotNull(service.getById(1L));\n    }\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 39}, {"id": 9, "title": "Spring MockMvc Controller Slice Test", "language": "Java", "category": "Testing & JUnit", "projectContext": "API Testing", "visibility": "PUBLIC", "tags": "mockmvc,junit5,controller-test,rest-api", "description": "Standalone MockMvc test verifying JSON payload and HTTP 201 status.", "codeContent": "mockMvc.perform(post(\"/api/items\")\n        .contentType(MediaType.APPLICATION_JSON)\n        .content(objectMapper.writeValueAsString(dto)))\n    .andExpect(status().isCreated())\n    .andExpect(jsonPath(\"$.id\").exists());", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 24}, {"id": 10, "title": "Java Stream Grouping & Aggregation", "language": "Java", "category": "Algorithms & Utils", "projectContext": "Analytics Engine", "visibility": "GLOBAL", "tags": "java-streams,groupingby,collections,analytics", "description": "Group records by category and sum revenue using Collectors.groupingBy.", "codeContent": "Map<String, Double> revenueByCategory = orders.stream()\n    .collect(Collectors.groupingBy(\n        Order::getCategory,\n        Collectors.summingDouble(Order::getTotalAmount)\n    ));", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 29}, {"id": 11, "title": "HMAC-SHA256 Webhook Signature Verifier", "language": "Java", "category": "Security & Auth", "projectContext": "Webhook Listener", "visibility": "PUBLIC", "tags": "hmac,sha256,webhook,security,crypto", "description": "Verify incoming webhook payloads using constant-time HMAC-SHA256.", "codeContent": "Mac mac = Mac.getInstance(\"HmacSHA256\");\nmac.init(new SecretKeySpec(secret.getBytes(UTF_8), \"HmacSHA256\"));\nbyte[] digest = mac.doFinal(payload.getBytes(UTF_8));\nreturn MessageDigest.isEqual(expectedBytes, digest);", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 41}, {"id": 12, "title": "Spring Boot Scheduled Cron Job", "language": "Java", "category": "Backend & REST API", "projectContext": "Batch Worker", "visibility": "GLOBAL", "tags": "scheduler,cron,spring-boot,background-job", "description": "Run periodic cleanup or report generation with @Scheduled cron expression.", "codeContent": "@Scheduled(cron = \"0 0 2 * * *\", zone = \"Asia/Kolkata\")\npublic void purgeExpiredTokens() {\n    int deleted = tokenRepo.deleteByExpiresAtBefore(LocalDateTime.now());\n    log.info(\"Purged {} expired tokens\", deleted);\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 22}, {"id": 13, "title": "DTO Bean Validation Annotations", "language": "Java", "category": "Backend & REST API", "projectContext": "Input Validation", "visibility": "PUBLIC", "tags": "validation,jakarta,dto,spring-boot", "description": "Standard Jakarta Bean Validation constraints for REST request DTOs.", "codeContent": "public record UserCreateDTO(\n    @NotBlank @Size(min = 2, max = 80) String name,\n    @Email @NotBlank String email,\n    @Pattern(regexp = \"^[a-zA-Z0-9_]{4,20}$\") String username\n) {}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 28}, {"id": 14, "title": "Spring Data JPA Dynamic Specification", "language": "Java", "category": "Database & Queries", "projectContext": "Search Engine", "visibility": "GLOBAL", "tags": "jpa,specification,criteria,search", "description": "Composable JPA Specification predicates for multi-filter search endpoints.", "codeContent": "public static Specification<Item> hasCategory(String cat) {\n    return (root, q, cb) -> (cat == null || cat.isBlank())\n        ? null : cb.equal(cb.lower(root.get(\"category\")), cat.toLowerCase());\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 34}, {"id": 15, "title": "Thread-Safe Token Bucket Rate Limiter", "language": "Java", "category": "Security & Auth", "projectContext": "API Gateway", "visibility": "PUBLIC", "tags": "rate-limiter,concurrency,atomic,api-protection", "description": "Lightweight in-memory rate limiter using AtomicInteger and timestamp.", "codeContent": "public synchronized boolean allowRequest() {\n    long now = System.currentTimeMillis();\n    if (now - windowStart > 60_000) { count.set(0); windowStart = now; }\n    return count.incrementAndGet() <= maxPerMinute;\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 19}, {"id": 16, "title": "BCrypt Password Hashing Utility", "language": "Java", "category": "Security & Auth", "projectContext": "User Auth", "visibility": "GLOBAL", "tags": "bcrypt,password,hashing,security", "description": "Hash and verify user passwords safely using Spring Security BCryptPasswordEncoder.", "codeContent": "PasswordEncoder encoder = new BCryptPasswordEncoder(12);\nString hash = encoder.encode(rawPassword);\nboolean matches = encoder.matches(rawPassword, hash);", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 47}, {"id": 17, "title": "Debounced Search Input Utility", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "Web Dashboard UI", "visibility": "GLOBAL", "tags": "debounce,performance,search,events", "description": "Debounce rapid keystrokes before firing REST API search queries.", "codeContent": "function debounce(fn, delay = 250) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn.apply(this, args), delay);\n  };\n}", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 68}, {"id": 18, "title": "Fetch API with Timeout & Exponential Retry", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "API Client", "visibility": "GLOBAL", "tags": "fetch,async,retry,abortcontroller,resilience", "description": "Resilient fetch wrapper with AbortController timeout and automatic retries.", "codeContent": "async function fetchWithRetry(url, opts = {}, retries = 3, timeoutMs = 5000) {\n  for (let i = 0; i <= retries; i++) {\n    const ctrl = new AbortController();\n    const id = setTimeout(() => ctrl.abort(), timeoutMs);\n    try {\n      const res = await fetch(url, { ...opts, signal: ctrl.signal });\n      clearTimeout(id);\n      if (!res.ok) throw new Error(`HTTP ${res.status}`);\n      return await res.json();\n    } catch (err) {\n      clearTimeout(id);\n      if (i === retries) throw err;\n      await new Promise(r => setTimeout(r, 300 * (2 ** i)));\n    }\n  }\n}", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 53}, {"id": 19, "title": "Clipboard Copy with Fallback", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "UI Utilities", "visibility": "PUBLIC", "tags": "clipboard,copy,browser-api,ux", "description": "Cross-browser copy-to-clipboard supporting both navigator.clipboard and iframe fallback.", "codeContent": "async function copyText(text) {\n  if (navigator.clipboard?.writeText) {\n    try { await navigator.clipboard.writeText(text); return true; } catch {}\n  }\n  const ta = Object.assign(document.createElement('textarea'), { value: text });\n  ta.style.position = 'fixed'; ta.style.left = '-9999px';\n  document.body.appendChild(ta); ta.select();\n  const ok = document.execCommand('copy'); ta.remove(); return ok;\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 40}, {"id": 20, "title": "XSS-Safe HTML Escaper", "language": "JavaScript", "category": "Security & Auth", "projectContext": "Frontend Security", "visibility": "GLOBAL", "tags": "xss,sanitize,html-escape,security", "description": "Escape untrusted user strings before injecting into innerHTML templates.", "codeContent": "function escapeHtml(str) {\n  return String(str ?? '')\n    .replace(/&/g, '&amp;').replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;');\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 37}, {"id": 21, "title": "React Custom useDebounce Hook", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "React Apps", "visibility": "PUBLIC", "tags": "react,hooks,debounce,typescript", "description": "Reusable React hook to debounce state values in search bars.", "codeContent": "function useDebounce(value, delay = 300) {\n  const [debounced, setDebounced] = React.useState(value);\n  React.useEffect(() => {\n    const t = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(t);\n  }, [value, delay]);\n  return debounced;\n}", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 45}, {"id": 22, "title": "LocalStorage JSON Safe Wrapper", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "Browser Storage", "visibility": "PUBLIC", "tags": "localstorage,json,storage,error-handling", "description": "Safe JSON get/set wrapper handling private mode and quota errors.", "codeContent": "const store = {\n  get(k, fallback = null) {\n    try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; }\n  },\n  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }\n};", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 30}, {"id": 23, "title": "JWT Payload Decoder (Client-Side)", "language": "JavaScript", "category": "Security & Auth", "projectContext": "Auth Frontend", "visibility": "PUBLIC", "tags": "jwt,base64,auth,decode", "description": "Decode JWT claims in the browser to inspect expiration without external libraries.", "codeContent": "function parseJwt(token) {\n  const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');\n  return JSON.parse(decodeURIComponent(atob(base64).split('')\n    .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 26}, {"id": 24, "title": "IntersectionObserver Lazy Loader", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "Performance", "visibility": "GLOBAL", "tags": "intersection-observer,lazy-load,infinite-scroll,dom", "description": "Trigger infinite scroll or lazy loading when a sentinel element enters viewport.", "codeContent": "const observer = new IntersectionObserver((entries) => {\n  if (entries[0].isIntersecting) loadNextPage();\n}, { rootMargin: '200px' });\nobserver.observe(document.querySelector('#scrollSentinel'));", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 21}, {"id": 25, "title": "Download Array of Objects as CSV", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "Reporting UI", "visibility": "PUBLIC", "tags": "csv,export,download,blob", "description": "Convert JSON rows into an escaped CSV file download in the browser.", "codeContent": "function exportCsv(rows, filename = 'export.csv') {\n  const keys = Object.keys(rows[0] || {});\n  const csv = [keys.join(','), ...rows.map(r => keys.map(k => JSON.stringify(r[k] ?? '')).join(','))].join('\\n');\n  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([csv])), download: filename });\n  a.click();\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 34}, {"id": 26, "title": "Express / Node Async Error Middleware", "language": "JavaScript", "category": "Backend & REST API", "projectContext": "Node Microservice", "visibility": "GLOBAL", "tags": "nodejs,express,middleware,error-handling", "description": "Centralized Express error-handling middleware returning clean JSON errors.", "codeContent": "app.use((err, req, res, next) => {\n  const status = err.statusCode || 500;\n  console.error(`[ERROR] ${req.method} ${req.url}:`, err.message);\n  res.status(status).json({ error: err.message || 'Internal Server Error' });\n});", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 25}, {"id": 27, "title": "Deep Object Clone & Freeze", "language": "JavaScript", "category": "Algorithms & Utils", "projectContext": "State Management", "visibility": "PUBLIC", "tags": "immutability,structuredclone,freeze,javascript", "description": "Deeply clone objects using structuredClone and recursively freeze them.", "codeContent": "function deepFreeze(obj) {\n  const copy = structuredClone(obj);\n  Object.values(copy).forEach(v => { if (v && typeof v === 'object') deepFreeze(v); });\n  return Object.freeze(copy);\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 17}, {"id": 28, "title": "URL Query Params Builder", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "API Client", "visibility": "PUBLIC", "tags": "urlsearchparams,query-string,rest-api", "description": "Build clean query strings skipping null, undefined, and empty values.", "codeContent": "function buildQuery(params) {\n  const sp = new URLSearchParams();\n  Object.entries(params).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') sp.append(k, v); });\n  return sp.toString();\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 20}, {"id": 29, "title": "Throttle Event Handler", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "UI Performance", "visibility": "PUBLIC", "tags": "throttle,scroll,resize,performance", "description": "Limit high-frequency scroll/resize handlers to run at most once per interval.", "codeContent": "function throttle(fn, limitMs = 150) {\n  let waiting = false;\n  return (...args) => {\n    if (waiting) return;\n    fn(...args); waiting = true;\n    setTimeout(() => { waiting = false; }, limitMs);\n  };\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 18}, {"id": 30, "title": "WebSocket Auto-Reconnect Client", "language": "JavaScript", "category": "Frontend & DOM", "projectContext": "Real-Time Apps", "visibility": "GLOBAL", "tags": "websocket,realtime,reconnect,backoff", "description": "Resilient WebSocket wrapper with exponential backoff reconnection.", "codeContent": "function connectWs(url, onMessage, delay = 1000) {\n  const ws = new WebSocket(url);\n  ws.onmessage = (e) => onMessage(JSON.parse(e.data));\n  ws.onclose = () => setTimeout(() => connectWs(url, onMessage, Math.min(delay * 2, 30000)), delay);\n  return ws;\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 28}, {"id": 31, "title": "Python Exponential Backoff Retry Decorator", "language": "Python", "category": "Algorithms & Utils", "projectContext": "Automation Scripts", "visibility": "GLOBAL", "tags": "python,decorator,retry,resilience", "description": "Reusable decorator retrying transient exceptions with exponential backoff.", "codeContent": "import time, functools\n\ndef retry(times=3, delay=1.0):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(1, times + 1):\n                try: return func(*args, **kwargs)\n                except Exception:\n                    if attempt == times: raise\n                    time.sleep(delay * (2 ** (attempt - 1)))\n        return wrapper\n    return decorator", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 44}, {"id": 32, "title": "FastAPI CRUD Router with Pydantic v2", "language": "Python", "category": "Backend & REST API", "projectContext": "Python Microservice", "visibility": "GLOBAL", "tags": "fastapi,pydantic,rest-api,python", "description": "Typed FastAPI POST endpoint with automatic validation and HTTP 201.", "codeContent": "from fastapi import APIRouter, status\nfrom pydantic import BaseModel\n\nrouter = APIRouter(prefix=\"/items\", tags=[\"Items\"])\nclass ItemIn(BaseModel): name: str; price: float\n\n@router.post(\"/\", status_code=status.HTTP_201_CREATED)\nasync def create_item(item: ItemIn):\n    return {\"created\": item.model_dump()}", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 51}, {"id": 33, "title": "Asyncio Concurrent HTTP Fetcher (httpx)", "language": "Python", "category": "Algorithms & Utils", "projectContext": "Data Pipeline", "visibility": "PUBLIC", "tags": "asyncio,httpx,concurrency,python", "description": "Fetch dozens of API URLs concurrently using httpx.AsyncClient and asyncio.gather.", "codeContent": "import asyncio, httpx\n\nasync def fetch_all(urls: list[str]):\n    async with httpx.AsyncClient(timeout=10.0) as client:\n        tasks = [client.get(u) for u in urls]\n        return await asyncio.gather(*tasks, return_exceptions=True)", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 32}, {"id": 34, "title": "Structured JSON Logger Configuration", "language": "Python", "category": "DevOps & Docker", "projectContext": "Observability", "visibility": "GLOBAL", "tags": "logging,json,observability,python", "description": "Configure Python logging for clean container stdout log aggregation.", "codeContent": "import logging, json, sys\n\nclass JsonFormatter(logging.Formatter):\n    def format(self, record):\n        return json.dumps({\"level\": record.levelname, \"msg\": record.getMessage(), \"module\": record.module})\n\nhandler = logging.StreamHandler(sys.stdout)\nhandler.setFormatter(JsonFormatter())", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 24}, {"id": 35, "title": "Pytest Fixture & Parametrized Test", "language": "Python", "category": "Testing & JUnit", "projectContext": "Python QA", "visibility": "PUBLIC", "tags": "pytest,parametrize,testing,python", "description": "Run data-driven unit tests across multiple edge cases with @pytest.mark.parametrize.", "codeContent": "import pytest\n\n@pytest.mark.parametrize(\"raw,expected\", [(\"10\", 10), (\"0\", 0), (\"-5\", -5)])\ndef test_parse_int(raw, expected):\n    assert int(raw) == expected", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 21}, {"id": 36, "title": "Pandas Chunked CSV Processor", "language": "Python", "category": "Database & Queries", "projectContext": "ETL Pipeline", "visibility": "PUBLIC", "tags": "pandas,csv,etl,memory-optimization", "description": "Process multi-gigabyte CSV files in constant memory using chunksize.", "codeContent": "import pandas as pd\n\ntotal = 0\nfor chunk in pd.read_csv(\"large_events.csv\", chunksize=50_000):\n    total += chunk[chunk[\"status\"] == \"SUCCESS\"][\"amount\"].sum()\nprint(total)", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 29}, {"id": 37, "title": "Python Context Manager for Timing", "language": "Python", "category": "Algorithms & Utils", "projectContext": "Profiling", "visibility": "PUBLIC", "tags": "contextmanager,benchmark,timing,python", "description": "Measure execution latency of any code block using @contextmanager.", "codeContent": "import time\nfrom contextlib import contextmanager\n\n@contextmanager\ndef timer(label=\"block\"):\n    t0 = time.perf_counter()\n    try: yield\n    finally: print(f\"{label}: {(time.perf_counter() - t0)*1000:.2f} ms\")", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 23}, {"id": 38, "title": "Pydantic Settings Environment Loader", "language": "Python", "category": "Backend & REST API", "projectContext": "Config Management", "visibility": "GLOBAL", "tags": "pydantic-settings,env,config,python", "description": "Load and validate .env variables automatically using BaseSettings.", "codeContent": "from pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    database_url: str\n    jwt_secret: str\n    class Config: env_file = \".env\"\n\nsettings = Settings()", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 31}, {"id": 39, "title": "LRU Cache Memoization for Expensive Calls", "language": "Python", "category": "Algorithms & Utils", "projectContext": "Optimization", "visibility": "PUBLIC", "tags": "functools,lru_cache,memoization,performance", "description": "Cache pure function outputs in memory using @functools.lru_cache.", "codeContent": "from functools import lru_cache\n\n@lru_cache(maxsize=1024)\ndef compute_fibonacci(n: int) -> int:\n    return n if n < 2 else compute_fibonacci(n - 1) + compute_fibonacci(n - 2)", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 16}, {"id": 40, "title": "SQLite / Postgres Context Connection", "language": "Python", "category": "Database & Queries", "projectContext": "DB Scripts", "visibility": "PUBLIC", "tags": "sqlite,database,transaction,python", "description": "Execute parameterized SQL safely with automatic commit/rollback.", "codeContent": "import sqlite3\n\nwith sqlite3.connect(\"app.db\") as conn:\n    cur = conn.execute(\"SELECT id, title FROM items WHERE active = ?\", (1,))\n    rows = cur.fetchall()", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 18}, {"id": 41, "title": "Python Argparse Subcommand CLI Template", "language": "Python", "category": "DevOps & Docker", "projectContext": "CLI Tools", "visibility": "PUBLIC", "tags": "argparse,cli,automation,python", "description": "Clean CLI entry point supporting subcommands and typed flags.", "codeContent": "import argparse\n\nparser = argparse.ArgumentParser(description=\"Project CLI\")\nparser.add_argument(\"--env\", choices=[\"dev\", \"prod\"], default=\"dev\")\nargs = parser.parse_args()\nprint(f\"Running in {args.env}\")", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 14}, {"id": 42, "title": "Secure Random Token Generator", "language": "Python", "category": "Security & Auth", "projectContext": "Auth Utilities", "visibility": "GLOBAL", "tags": "secrets,token,security,crypto", "description": "Generate cryptographically strong URL-safe tokens using secrets.", "codeContent": "import secrets\n\napi_key = secrets.token_urlsafe(32)\notp_code = f\"{secrets.randbelow(1000000):06d}\"", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 27}, {"id": 43, "title": "MySQL FULLTEXT Search Query", "language": "SQL", "category": "Database & Queries", "projectContext": "Search Engine", "visibility": "GLOBAL", "tags": "mysql,fulltext,search,indexing", "description": "Fast MySQL natural-language full-text search with relevance ranking.", "codeContent": "SELECT id, title, MATCH(title, description, tags) AGAINST (:q IN NATURAL LANGUAGE MODE) AS score\nFROM snippets\nWHERE MATCH(title, description, tags) AGAINST (:q IN NATURAL LANGUAGE MODE)\nORDER BY score DESC LIMIT 25;", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 38}, {"id": 44, "title": "SQL Window Function Top-N Per Group", "language": "SQL", "category": "Database & Queries", "projectContext": "Analytics", "visibility": "GLOBAL", "tags": "sql,window-function,row_number,cte", "description": "Retrieve top 3 most-copied snippets per programming language using ROW_NUMBER().", "codeContent": "WITH ranked AS (\n  SELECT id, title, language, copy_count,\n         ROW_NUMBER() OVER (PARTITION BY language ORDER BY copy_count DESC) AS rn\n  FROM snippets\n)\nSELECT * FROM ranked WHERE rn <= 3;", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 43}, {"id": 45, "title": "MySQL Idempotent Upsert (ON DUPLICATE KEY)", "language": "SQL", "category": "Database & Queries", "projectContext": "Data Sync", "visibility": "PUBLIC", "tags": "mysql,upsert,insert,idempotent", "description": "Insert a new record or update existing row atomically without race conditions.", "codeContent": "INSERT INTO daily_metrics (metric_date, total_copies)\nVALUES (CURDATE(), 1)\nON DUPLICATE KEY UPDATE total_copies = total_copies + 1;", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 26}, {"id": 46, "title": "Keyset (Cursor) Pagination Query", "language": "SQL", "category": "Database & Queries", "projectContext": "High-Scale Feeds", "visibility": "GLOBAL", "tags": "pagination,cursor,mysql,performance", "description": "Fast O(1) cursor pagination avoiding slow OFFSET scans on large tables.", "codeContent": "SELECT id, title, updated_at\nFROM snippets\nWHERE id < :last_seen_id\nORDER BY id DESC\nLIMIT 20;", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 31}, {"id": 47, "title": "Find & Remove Duplicate Rows Safely", "language": "SQL", "category": "Database & Queries", "projectContext": "DB Maintenance", "visibility": "PUBLIC", "tags": "sql,deduplicate,cleanup,maintenance", "description": "Identify duplicate email/username rows keeping only the lowest ID.", "codeContent": "DELETE t1 FROM team_users t1\nINNER JOIN team_users t2\nWHERE t1.id > t2.id AND t1.username = t2.username;", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 20}, {"id": 48, "title": "MySQL Composite Index Creation", "language": "SQL", "category": "Database & Queries", "projectContext": "DB Optimization", "visibility": "PUBLIC", "tags": "mysql,index,performance,schema", "description": "Create composite index matching equality + range/sort filter columns.", "codeContent": "CREATE INDEX idx_snippets_lang_updated\nON snippets (language, updated_at DESC);", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 25}, {"id": 49, "title": "JSON Column Extraction in MySQL 8", "language": "SQL", "category": "Database & Queries", "projectContext": "Flexible Schemas", "visibility": "PUBLIC", "tags": "mysql,json,json_extract,query", "description": "Query nested fields inside a MySQL 8 JSON column cleanly.", "codeContent": "SELECT id, JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.framework')) AS framework\nFROM project_configs\nWHERE metadata->'$.active' = true;", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 18}, {"id": 50, "title": "7-Day Rolling Sum Revenue CTE", "language": "SQL", "category": "Database & Queries", "projectContext": "BI Reporting", "visibility": "PUBLIC", "tags": "sql,cte,rolling-average,reporting", "description": "Calculate 7-day moving sum over daily metrics using window frames.", "codeContent": "SELECT day, amount,\n       SUM(amount) OVER (ORDER BY day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rolling_7d\nFROM daily_sales;", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 22}, {"id": 51, "title": "MySQL Slow Query & Table Size Audit", "language": "SQL", "category": "Database & Queries", "projectContext": "DBA Toolkit", "visibility": "LOCAL", "tags": "mysql,dba,table-size,monitoring", "description": "Inspect top tables by disk size in MB from information_schema.", "codeContent": "SELECT table_name, ROUND((data_length + index_length) / 1024 / 1024, 2) AS size_mb\nFROM information_schema.tables\nWHERE table_schema = DATABASE()\nORDER BY size_mb DESC;", "author": "System Library", "favorite": false, "sharedWithTeam": false, "copyCount": 15}, {"id": 52, "title": "Database Foreign Key Migration DDL", "language": "SQL", "category": "Database & Queries", "projectContext": "Schema Migration", "visibility": "PUBLIC", "tags": "ddl,foreign-key,cascade,mysql", "description": "Add a cascading foreign key constraint safely during schema updates.", "codeContent": "ALTER TABLE group_members\nADD CONSTRAINT fk_group_members_group\nFOREIGN KEY (group_id) REFERENCES project_groups(id) ON DELETE CASCADE;", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 19}, {"id": 53, "title": "Multi-Stage Spring Boot Dockerfile", "language": "Dockerfile", "category": "DevOps & Docker", "projectContext": "CI/CD Deployment", "visibility": "GLOBAL", "tags": "docker,maven,java-17,multi-stage", "description": "Build Maven JAR in stage 1 and ship minimal JRE 17 image in stage 2.", "codeContent": "FROM maven:3.9.6-eclipse-temurin-17 AS build\nWORKDIR /app\nCOPY pom.xml .\nRUN mvn dependency:go-offline -B\nCOPY src ./src\nRUN mvn clean package -DskipTests\n\nFROM eclipse-temurin:17-jre-jammy\nWORKDIR /app\nCOPY --from=build /app/target/*.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 54}, {"id": 54, "title": "Node.js / React Production Nginx Dockerfile", "language": "Dockerfile", "category": "DevOps & Docker", "projectContext": "Frontend Hosting", "visibility": "GLOBAL", "tags": "docker,nginx,react,frontend", "description": "Compile Vite/React app and serve static bundle via lightweight Nginx Alpine.", "codeContent": "FROM node:20-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM nginx:alpine\nCOPY --from=build /app/dist /usr/share/nginx/html\nEXPOSE 80", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 39}, {"id": 55, "title": "Docker Compose MySQL 8 Healthcheck Service", "language": "YAML", "category": "DevOps & Docker", "projectContext": "Local Dev Stack", "visibility": "GLOBAL", "tags": "docker-compose,mysql,healthcheck,yaml", "description": "MySQL 8 container with persistent volume and healthcheck for depends_on.", "codeContent": "services:\n  mysql-db:\n    image: mysql:8.0\n    environment:\n      MYSQL_DATABASE: app_db\n      MYSQL_ROOT_PASSWORD: secret\n    healthcheck:\n      test: [\"CMD\", \"mysqladmin\", \"ping\", \"-h\", \"localhost\"]\n      interval: 10s\n      retries: 5", "author": "System Library", "favorite": true, "sharedWithTeam": true, "copyCount": 46}, {"id": 56, "title": "GitHub Actions Java Maven CI Pipeline", "language": "YAML", "category": "DevOps & Docker", "projectContext": "CI/CD Automation", "visibility": "GLOBAL", "tags": "github-actions,ci-cd,maven,java", "description": "Automated JUnit test and Maven build workflow on push and pull request.", "codeContent": "name: Java CI\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-java@v4\n        with: { java-version: '17', distribution: 'temurin', cache: 'maven' }\n      - run: mvn clean test", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 42}, {"id": 57, "title": "Kubernetes Deployment + Readiness Probe", "language": "YAML", "category": "DevOps & Docker", "projectContext": "Cloud K8s", "visibility": "PUBLIC", "tags": "kubernetes,k8s,deployment,probes", "description": "Production Kubernetes Deployment manifest with resource limits and HTTP probe.", "codeContent": "apiVersion: apps/v1\nkind: Deployment\nmetadata: { name: snippet-app }\nspec:\n  replicas: 2\n  template:\n    spec:\n      containers:\n        - name: app\n          image: snippet-manager:1.0\n          ports: [{ containerPort: 8080 }]\n          readinessProbe: { httpGet: { path: /api/snippets/stats, port: 8080 } }", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 29}, {"id": 58, "title": "Nginx Reverse Proxy with WebSocket Headers", "language": "Bash", "category": "DevOps & Docker", "projectContext": "Edge Proxy", "visibility": "PUBLIC", "tags": "nginx,reverse-proxy,websocket,ssl", "description": "Proxy external HTTPS traffic to local Spring Boot / Node service on port 8080.", "codeContent": "location / {\n    proxy_pass http://127.0.0.1:8080;\n    proxy_set_header Host $host;\n    proxy_set_header X-Real-IP $remote_addr;\n    proxy_set_header Upgrade $http_upgrade;\n    proxy_set_header Connection \"upgrade\";\n}", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 24}, {"id": 59, "title": "Automated MySQL Backup & Gzip Script", "language": "Bash", "category": "DevOps & Docker", "projectContext": "Operations", "visibility": "PUBLIC", "tags": "bash,mysql,backup,mysqldump", "description": "Dump MySQL database inside Docker container and compress with timestamp.", "codeContent": "#!/usr/bin/env bash\nset -euo pipefail\nFILE=\"backup_$(date +%F_%H%M).sql.gz\"\ndocker exec snippet-mysql mysqldump -u root -prootpassword snippet_manager_db | gzip > \"$FILE\"\necho \"Saved $FILE\"", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 27}, {"id": 60, "title": "Git Squash Last N Commits Helper", "language": "Bash", "category": "DevOps & Docker", "projectContext": "Git Workflow", "visibility": "PUBLIC", "tags": "git,rebase,squash,workflow", "description": "Cleanly squash the last 3 local commits before opening a pull request.", "codeContent": "git reset --soft HEAD~3\ngit commit -m \"feat: unified clean PR commit\"\ngit push --force-with-lease", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 33}, {"id": 61, "title": "Docker Cleanup Dangling Images & Volumes", "language": "Bash", "category": "DevOps & Docker", "projectContext": "Disk Cleanup", "visibility": "LOCAL", "tags": "docker,prune,cleanup,disk-space", "description": "Reclaim disk space by removing stopped containers and dangling build cache.", "codeContent": "docker system prune -f\ndocker builder prune -f", "author": "System Library", "favorite": false, "sharedWithTeam": false, "copyCount": 35}, {"id": 62, "title": "Bootstrap 5 Responsive Card Grid", "language": "HTML/CSS", "category": "Frontend & DOM", "projectContext": "UI Templates", "visibility": "GLOBAL", "tags": "bootstrap,html,css,grid,responsive", "description": "Responsive 1/2/3-column card layout using Bootstrap 5 row-cols utilities.", "codeContent": "<div class=\"row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3\">\n  <div class=\"col\"><div class=\"card h-100 p-3\">Card 1</div></div>\n  <div class=\"col\"><div class=\"card h-100 p-3\">Card 2</div></div>\n</div>", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 30}, {"id": 63, "title": "CSS Light & Dark Theme Variables", "language": "HTML/CSS", "category": "Frontend & DOM", "projectContext": "Design System", "visibility": "GLOBAL", "tags": "css,dark-mode,variables,theming", "description": "Clean CSS custom properties switching smoothly with [data-bs-theme].", "codeContent": "[data-bs-theme=\"light\"] { --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; }\n[data-bs-theme=\"dark\"]  { --bg: #0f172a; --surface: #1e293b; --text: #f8fafc; }\nbody { background: var(--bg); color: var(--text); }", "author": "System Library", "favorite": false, "sharedWithTeam": true, "copyCount": 28}, {"id": 64, "title": "Personal Local Scratchpad Notes", "language": "Bash", "category": "DevOps & Docker", "projectContext": "Personal Notes", "visibility": "PRIVATE", "tags": "private,notes,local,cli", "description": "Example private snippet visible only to its creator.", "codeContent": "# Private local quick-check commands\ndocker compose ps\ncurl -s http://localhost:8080/api/snippets/stats", "author": "System Library", "favorite": false, "sharedWithTeam": false, "copyCount": 5}];
 
-        // Application State
-        let snippets = [];
-        let currentScope = 'all'; // 'all' | 'favorites' | 'team'
-        let currentCategory = '';
-        let currentTag = '';
-        let pendingDeleteId = null;
-        let isBackendConnected = false;
-
-        // Language Badge Styling Map
-        const LANG_COLORS = {
-            "Java": "bg-danger-subtle text-danger border border-danger-subtle",
-            "JavaScript": "bg-warning-subtle text-warning border border-warning-subtle",
-            "SQL": "bg-info-subtle text-info border border-info-subtle",
-            "Python": "bg-primary-subtle text-primary border border-primary-subtle",
-            "HTML/CSS": "bg-success-subtle text-success border border-success-subtle",
-            "Dockerfile": "bg-info-subtle text-info border border-info-subtle",
-            "YAML": "bg-secondary-subtle text-light border border-secondary",
-            "Bash": "bg-light-subtle text-light border border-secondary"
+        const AI_INTENT_MAP = {
+            ecommerce: ["pagination", "redis", "cache", "jwt", "validation", "mysql"],
+            auth: ["jwt", "bcrypt", "security", "cors", "token", "secrets"],
+            login: ["jwt", "bcrypt", "security", "token"],
+            api: ["rest-api", "exception", "validation", "cors", "rate-limiter"],
+            microservice: ["spring-boot", "webclient", "docker", "kubernetes", "retry", "logging"],
+            dashboard: ["debounce", "fetch", "bootstrap", "csv", "dark-mode", "react"],
+            frontend: ["debounce", "fetch", "clipboard", "xss", "bootstrap", "css"],
+            database: ["mysql", "jpa", "index", "pagination", "fulltext", "window-function"],
+            deploy: ["docker", "docker-compose", "github-actions", "kubernetes", "nginx"],
+            analytics: ["groupingby", "window-function", "cte", "pandas", "rolling-average"]
         };
 
-        // Storage Helpers (Canvas-safe)
-        function loadStoredSnippets() {
+        let users = [];
+        let currentUser = null;
+        let snippets = [];
+        let groups = [];
+        let currentVisibility = 'ALL';
+        let currentGroupIdFilter = null;
+        let currentCategory = '';
+        let currentTag = '';
+        let activeShareToken = '';
+        let pendingDeleteId = null;
+        let isBackendConnected = false;
+        let searchDebounceTimer = null;
+
+        // Theme
+        function initTheme() {
+            let saved = 'light';
+            try { saved = localStorage.getItem('sv_theme') || 'light'; } catch (e) {}
+            applyTheme(saved);
+        }
+
+        function toggleTheme() {
+            const cur = document.documentElement.getAttribute('data-bs-theme') || 'light';
+            const next = cur === 'light' ? 'dark' : 'light';
+            applyTheme(next);
+            try { localStorage.setItem('sv_theme', next); } catch (e) {}
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (icon) icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+            if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        }
+
+        // Auth (zero default usernames/passwords)
+        function loadUsers() {
             try {
-                const raw = localStorage.getItem('snippet_vault_data_v1');
+                const raw = localStorage.getItem('sv_users_v2');
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        return parsed;
-                    }
+                    if (Array.isArray(parsed)) return parsed;
                 }
-            } catch (e) {
-                // Ignore storage errors in sandboxed iframes
+            } catch (e) {}
+            return [];
+        }
+
+        function saveUsers() {
+            try { localStorage.setItem('sv_users_v2', JSON.stringify(users)); } catch (e) {}
+        }
+
+        function switchAuthTab(tab) {
+            document.getElementById('loginForm').classList.toggle('d-none', tab !== 'login');
+            document.getElementById('signupForm').classList.toggle('d-none', tab !== 'signup');
+            document.getElementById('authTabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('authTabSignup').classList.toggle('active', tab === 'signup');
+            document.getElementById('loginErrorBox').classList.add('d-none');
+            document.getElementById('signupErrorBox').classList.add('d-none');
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('loginUsernameInput').value.trim();
+            const password = document.getElementById('loginPasswordInput').value;
+            const errBox = document.getElementById('loginErrorBox');
+            errBox.classList.add('d-none');
+
+            if (isBackendConnected) {
+                try {
+                    const loginUrl = '/api/auth/login';
+                    const res = await window.fetch(loginUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ identifier, password })
+                    });
+                    if (res.ok) {
+                        completeLogin(await res.json());
+                        return;
+                    }
+                    const errData = await res.json();
+                    errBox.textContent = errData.error || 'Invalid credentials.';
+                    errBox.classList.remove('d-none');
+                    return;
+                } catch (err) {}
             }
+
+            const found = users.find(u =>
+                (u.name.toLowerCase() === identifier.toLowerCase() || u.username.toLowerCase() === identifier.toLowerCase()) &&
+                u.password === password
+            );
+            if (!found) {
+                errBox.textContent = 'Account not found or wrong password. Use Sign Up if you are new.';
+                errBox.classList.remove('d-none');
+                return;
+            }
+            completeLogin(found);
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupNameInput').value.trim();
+            const username = document.getElementById('signupUsernameInput').value.trim().toLowerCase();
+            const password = document.getElementById('signupPasswordInput').value;
+            const errBox = document.getElementById('signupErrorBox');
+            errBox.classList.add('d-none');
+
+            if (isBackendConnected) {
+                try {
+                    const signupUrl = '/api/auth/signup';
+                    const res = await window.fetch(signupUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, username, password })
+                    });
+                    if (res.ok) {
+                        const created = await res.json();
+                        completeLogin(created);
+                        showToast(`Welcome, ${created.name}!`, 'success');
+                        return;
+                    }
+                    const errData = await res.json();
+                    errBox.textContent = errData.error || 'Registration failed.';
+                    errBox.classList.remove('d-none');
+                    return;
+                } catch (err) {}
+            }
+
+            if (users.some(u => u.username.toLowerCase() === username || u.name.toLowerCase() === name.toLowerCase())) {
+                errBox.textContent = 'Username or name already exists.';
+                errBox.classList.remove('d-none');
+                return;
+            }
+
+            const newUser = { name, username, password, role: 'Member' };
+            users.push(newUser);
+            saveUsers();
+            completeLogin(newUser);
+            showToast(`Account created for ${name}!`, 'success');
+        }
+
+        function completeLogin(user) {
+            currentUser = user;
+            try { localStorage.setItem('sv_current_user_v2', JSON.stringify(user)); } catch (e) {}
+            document.getElementById('currentUserDisplay').textContent = user.name;
+            document.getElementById('authSection').classList.add('d-none');
+            document.getElementById('appMainSection').classList.remove('d-none');
+            document.getElementById('navLinksGroup').classList.remove('d-none');
+            document.getElementById('userMenuGroup').classList.remove('d-none');
+            renderAll();
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            try { localStorage.removeItem('sv_current_user_v2'); } catch (e) {}
+            document.getElementById('appMainSection').classList.add('d-none');
+            document.getElementById('navLinksGroup').classList.add('d-none');
+            document.getElementById('userMenuGroup').classList.add('d-none');
+            document.getElementById('authSection').classList.remove('d-none');
+            document.getElementById('loginForm').reset();
+        }
+
+        function openChangePasswordModal() {
+            document.getElementById('currentPwdInput').value = '';
+            document.getElementById('newPwdInput').value = '';
+            document.getElementById('changePwdError').classList.add('d-none');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('changePasswordModal')).show();
+        }
+
+        async function handleChangePassword(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            const currentPassword = document.getElementById('currentPwdInput').value;
+            const newPassword = document.getElementById('newPwdInput').value;
+            const errBox = document.getElementById('changePwdError');
+            errBox.classList.add('d-none');
+
+            if (isBackendConnected) {
+                try {
+                    const pwdUrl = '/api/auth/change-password';
+                    const res = await window.fetch(pwdUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: currentUser.username, currentPassword, newPassword })
+                    });
+                    if (!res.ok) {
+                        const errData = await res.json();
+                        errBox.textContent = errData.error || 'Current password incorrect.';
+                        errBox.classList.remove('d-none');
+                        return;
+                    }
+                } catch (err) {}
+            } else {
+                const idx = users.findIndex(u => u.username === currentUser.username);
+                if (idx === -1 || users[idx].password !== currentPassword) {
+                    errBox.textContent = 'Current password incorrect.';
+                    errBox.classList.remove('d-none');
+                    return;
+                }
+                users[idx].password = newPassword;
+                saveUsers();
+            }
+
+            currentUser.password = newPassword;
+            try { localStorage.setItem('sv_current_user_v2', JSON.stringify(currentUser)); } catch (e) {}
+            bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+            showToast('Password updated!', 'success');
+        }
+
+        // Data Load & Init
+        function loadStoredSnippets() {
+            try {
+                const raw = localStorage.getItem('sv_snippets_64_v1');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {}
             return JSON.parse(JSON.stringify(SEED_SNIPPETS));
         }
 
         function saveStoredSnippets() {
-            try {
-                localStorage.setItem('snippet_vault_data_v1', JSON.stringify(snippets));
-            } catch (e) {
-                // Ignore storage errors in sandboxed iframes
-            }
+            try { localStorage.setItem('sv_snippets_64_v1', JSON.stringify(snippets)); } catch (e) {}
         }
 
-        // Initialize App & Probe Spring Boot API if running on localhost:8080
+        function loadStoredGroups() {
+            try {
+                const raw = localStorage.getItem('sv_groups_v1');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) return parsed;
+                }
+            } catch (e) {}
+            return [];
+        }
+
+        function saveStoredGroups() {
+            try { localStorage.setItem('sv_groups_v1', JSON.stringify(groups)); } catch (e) {}
+        }
+
         async function initApp() {
+            initTheme();
+            users = loadUsers();
             snippets = loadStoredSnippets();
-            if (window.location.protocol.startsWith('http') && window.location.port === '8080') {
+            groups = loadStoredGroups();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            activeShareToken = urlParams.get('share') || '';
+
+            const isHttpOrigin = window.location.protocol.startsWith('http') &&
+                                 !window.location.hostname.includes('googleusercontent') &&
+                                 !window.location.hostname.includes('scf.usercontent');
+
+            if (isHttpOrigin) {
                 try {
-                    const apiRoot = '/api/snippets'; const res = await window.fetch(apiRoot);
+                    const apiRoot = '/api/snippets';
+                    const res = await window.fetch(apiRoot);
                     if (res.ok) {
                         snippets = await res.json();
                         isBackendConnected = true;
                         const badge = document.getElementById('backendStatusBadge');
                         if (badge) {
-                            badge.innerHTML = '<i class="bi bi-hdd-network-fill me-1"></i> Spring Boot + MySQL Connected';
+                            badge.className = 'badge text-bg-success fw-normal d-none d-md-inline-block';
+                            badge.textContent = 'Spring Boot + MySQL';
                         }
+                        const grpRoot = '/api/groups';
+                        const gRes = await window.fetch(grpRoot);
+                        if (gRes.ok) groups = await gRes.json();
                     }
                 } catch (err) {
                     isBackendConnected = false;
                 }
             }
+
+            if (activeShareToken) {
+                document.getElementById('sharedModeBanner').classList.remove('d-none');
+            }
+
+            try {
+                const savedUser = localStorage.getItem('sv_current_user_v2');
+                if (savedUser) completeLogin(JSON.parse(savedUser));
+            } catch (e) {}
             loadApiPreset();
-            renderAll();
         }
 
-        // View Navigation
+        function exitSharedMode() {
+            activeShareToken = '';
+            document.getElementById('sharedModeBanner').classList.add('d-none');
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            renderSnippets();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+            if (e.key === '/' && tag !== 'input' && tag !== 'textarea' && tag !== 'select' && currentUser) {
+                e.preventDefault();
+                const el = document.getElementById('searchInput');
+                if (el) el.focus();
+            } else if (e.key === 'Escape' && document.activeElement && document.activeElement.id === 'searchInput') {
+                clearSearchAndFilters();
+                document.activeElement.blur();
+            }
+        });
+
         function switchView(viewName) {
             const views = {
                 workspace: document.getElementById('viewWorkspace'),
-                apitester: document.getElementById('viewApiTester'),
-                architecture: document.getElementById('viewArchitecture')
+                aisearch: document.getElementById('viewAiSearch'),
+                groups: document.getElementById('viewGroups'),
+                apitester: document.getElementById('viewApiTester')
             };
             const buttons = {
                 workspace: document.getElementById('tabBtnWorkspace'),
-                apitester: document.getElementById('tabBtnApiTester'),
-                architecture: document.getElementById('tabBtnArchitecture')
+                aisearch: document.getElementById('tabBtnAiSearch'),
+                groups: document.getElementById('tabBtnGroups'),
+                apitester: document.getElementById('tabBtnApiTester')
             };
             Object.keys(views).forEach(k => {
                 if (views[k]) views[k].classList.toggle('d-none', k !== viewName);
                 if (buttons[k]) buttons[k].classList.toggle('active', k === viewName);
             });
+            if (viewName === 'groups') renderGroupsView();
         }
 
-        // Render Complete Workspace
+        // Visibility & Group Access Check
+        function canUserSeeSnippet(s) {
+            const vis = (s.visibility || 'PUBLIC').toUpperCase();
+            if (vis === 'GLOBAL' || vis === 'PUBLIC') return true;
+            if (!currentUser) return false;
+            const uname = currentUser.username.toLowerCase();
+            if (vis === 'PRIVATE' || vis === 'LOCAL') {
+                if (!s.ownerUsername) return true; // seed local/private example
+                return s.ownerUsername.toLowerCase() === uname;
+            }
+            if (vis === 'GROUP') {
+                const grp = groups.find(g => g.id === s.groupId);
+                return grp ? grp.members.some(m => m.toLowerCase() === uname) : false;
+            }
+            return true;
+        }
+
+        function getMyGroups() {
+            if (!currentUser) return [];
+            const uname = currentUser.username.toLowerCase();
+            return groups.filter(g => (g.members || []).some(m => m.toLowerCase() === uname));
+        }
+
         function renderAll() {
-            updateKpisAndCounts();
-            renderCategorySidebar();
-            renderPopularTags();
+            const accessible = snippets.filter(canUserSeeSnippet);
+            document.getElementById('countAll').textContent = accessible.length;
+            document.getElementById('countGlobal').textContent = accessible.filter(s => (s.visibility || '').toUpperCase() === 'GLOBAL').length;
+            document.getElementById('countPublic').textContent = accessible.filter(s => (s.visibility || 'PUBLIC').toUpperCase() === 'PUBLIC').length;
+            document.getElementById('countGroup').textContent = accessible.filter(s => (s.visibility || '').toUpperCase() === 'GROUP').length;
+            document.getElementById('countLocal').textContent = accessible.filter(s => (s.visibility || '').toUpperCase() === 'LOCAL').length;
+            document.getElementById('countPrivate').textContent = accessible.filter(s => (s.visibility || '').toUpperCase() === 'PRIVATE').length;
+
+            const myGrps = getMyGroups();
+            document.getElementById('myGroupsCountBadge').textContent = myGrps.length;
+            const sidebarGrps = document.getElementById('sidebarMyGroupsList');
+            sidebarGrps.innerHTML = myGrps.length === 0
+                ? '<div class="small text-secondary px-2">Not in any group yet.</div>'
+                : myGrps.map(g => {
+                    const active = currentGroupIdFilter === g.id ? 'active' : '';
+                    return `<button type="button" class="sv-sidebar-btn ${active}" onclick="setGroupFilter(${g.id})"><span class="text-truncate">${escapeHtml(g.name)}</span><span class="badge text-bg-primary rounded-pill">${(g.members || []).length}</span></button>`;
+                }).join('');
+
+            renderCategorySidebar(accessible);
+            renderPopularTags(accessible);
             renderSnippets();
         }
 
-        function updateKpisAndCounts() {
-            const total = snippets.length;
-            const langs = new Set(snippets.map(s => s.language)).size;
-            const favs = snippets.filter(s => s.favorite).length;
-            const team = snippets.filter(s => s.sharedWithTeam).length;
-            const copies = snippets.reduce((sum, s) => sum + (Number(s.copyCount) || 0), 0);
-
-            document.getElementById('kpiTotal').textContent = total;
-            document.getElementById('kpiLanguages').textContent = langs;
-            document.getElementById('kpiFavorites').textContent = favs;
-            document.getElementById('kpiCopies').textContent = copies;
-
-            document.getElementById('countAll').textContent = total;
-            document.getElementById('countFav').textContent = favs;
-            document.getElementById('countTeam').textContent = team;
-        }
-
-        function renderCategorySidebar() {
+        function renderCategorySidebar(accessible) {
             const counts = {};
-            snippets.forEach(s => {
-                counts[s.category] = (counts[s.category] || 0) + 1;
-            });
-            const container = document.getElementById('categoryFilterList');
-            const categories = Object.keys(counts).sort();
-            container.innerHTML = categories.map(cat => {
+            accessible.forEach(s => { counts[s.category] = (counts[s.category] || 0) + 1; });
+            document.getElementById('categoryFilterList').innerHTML = Object.keys(counts).sort().map(cat => {
                 const isActive = currentCategory === cat ? 'active' : '';
                 const safeCat = escapeHtml(cat);
-                return `
-                    <button type="button" class="sidebar-filter-btn ${isActive}" onclick="setCategoryFilter('${safeCat.replace(/'/g, "\\'")}')">
-                        <span class="text-truncate"><i class="bi bi-folder2 me-2 text-secondary"></i>${safeCat}</span>
-                        <span class="badge bg-dark border border-secondary rounded-pill">${counts[cat]}</span>
-                    </button>
-                `;
+                return `<button type="button" class="sv-sidebar-btn ${isActive}" onclick="setCategoryFilter('${safeCat.replace(/'/g, "\'")}')"><span class="text-truncate">${safeCat}</span><span class="badge text-bg-secondary rounded-pill">${counts[cat]}</span></button>`;
             }).join('');
         }
 
-        function renderPopularTags() {
+        function renderPopularTags(accessible) {
             const tagCounts = {};
-            snippets.forEach(s => {
+            accessible.forEach(s => {
                 if (!s.tags) return;
-                s.tags.split(',').map(t => t.trim()).filter(Boolean).forEach(t => {
-                    tagCounts[t] = (tagCounts[t] || 0) + 1;
-                });
+                s.tags.split(',').map(t => t.trim()).filter(Boolean).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
             });
-            const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]).slice(0, 12);
-            const container = document.getElementById('popularTagsContainer');
-            container.innerHTML = sortedTags.map(tag => {
+            const top = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]).slice(0, 10);
+            document.getElementById('popularTagsContainer').innerHTML = top.map(tag => {
                 const safeTag = escapeHtml(tag);
-                const activeClass = currentTag === tag ? 'border-info bg-info text-dark fw-bold' : '';
-                return `<span class="tag-badge ${activeClass}" onclick="setTagFilter('${safeTag.replace(/'/g, "\\'")}')">#${safeTag}</span>`;
+                const activeStyle = currentTag === tag ? 'background-color: var(--sv-accent); color: #fff;' : '';
+                return `<span class="sv-tag" style="${activeStyle}" onclick="setTagFilter('${safeTag.replace(/'/g, "\'")}')">#${safeTag}</span>`;
             }).join('');
         }
 
-        function setScopeFilter(scope) {
-            currentScope = scope;
-            document.getElementById('filterScopeAll').classList.toggle('active', scope === 'all');
-            document.getElementById('filterScopeFav').classList.toggle('active', scope === 'favorites');
-            document.getElementById('filterScopeTeam').classList.toggle('active', scope === 'team');
-            renderSnippets();
+        function setVisibilityFilter(vis) {
+            currentVisibility = vis;
+            currentGroupIdFilter = null;
+            ['ALL', 'GLOBAL', 'PUBLIC', 'GROUP', 'LOCAL', 'PRIVATE'].forEach(v => {
+                const el = document.getElementById('visBtn' + v);
+                if (el) el.classList.toggle('active', v === vis);
+            });
+            renderAll();
         }
 
-        function setCategoryFilter(category) {
-            currentCategory = (currentCategory === category) ? '' : category;
-            renderCategorySidebar();
-            renderSnippets();
+        function setGroupFilter(gid) {
+            currentGroupIdFilter = currentGroupIdFilter === gid ? null : gid;
+            currentVisibility = 'ALL';
+            renderAll();
+        }
+
+        function setCategoryFilter(cat) {
+            currentCategory = currentCategory === cat ? '' : cat;
+            renderAll();
         }
 
         function setTagFilter(tag) {
-            currentTag = (currentTag === tag) ? '' : tag;
-            renderPopularTags();
-            renderSnippets();
+            currentTag = currentTag === tag ? '' : tag;
+            renderAll();
+        }
+
+        function handleSearchInput() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => renderSnippets(), 180);
         }
 
         function clearSearchAndFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('languageSelect').value = '';
-            currentScope = 'all';
+            currentVisibility = 'ALL';
+            currentGroupIdFilter = null;
             currentCategory = '';
             currentTag = '';
-            setScopeFilter('all');
-            renderCategorySidebar();
-            renderPopularTags();
-            renderSnippets();
+            if (activeShareToken) exitSharedMode();
+            renderAll();
+        }
+
+        function computeSnippetScore(s, rawKeyword) {
+            if (!rawKeyword) return 1;
+            const tokens = rawKeyword.toLowerCase().split(/\s+/).filter(Boolean);
+            let totalScore = 0;
+            const title = (s.title || '').toLowerCase();
+            const lang = (s.language || '').toLowerCase();
+            const cat = (s.category || '').toLowerCase();
+            const proj = (s.projectContext || '').toLowerCase();
+            const tags = (s.tags || '').toLowerCase();
+            const desc = (s.description || '').toLowerCase();
+            const code = (s.codeContent || '').toLowerCase();
+            const author = (s.author || '').toLowerCase();
+
+            for (const tok of tokens) {
+                if (tok.startsWith('lang:')) { if (!lang.includes(tok.slice(5))) return 0; totalScore += 15; }
+                else if (tok.startsWith('tag:')) { if (!tags.includes(tok.slice(4))) return 0; totalScore += 14; }
+                else if (tok.startsWith('cat:')) { if (!cat.includes(tok.slice(4))) return 0; totalScore += 12; }
+                else if (tok.startsWith('project:')) { if (!proj.includes(tok.slice(8))) return 0; totalScore += 14; }
+                else if (tok.startsWith('author:')) { if (!author.includes(tok.slice(7))) return 0; totalScore += 10; }
+                else {
+                    let ts = 0;
+                    if (title.includes(tok)) ts += 12;
+                    if (tags.includes(tok)) ts += 10;
+                    if (proj.includes(tok)) ts += 8;
+                    if (lang.includes(tok) || cat.includes(tok)) ts += 6;
+                    if (desc.includes(tok)) ts += 5;
+                    if (code.includes(tok)) ts += 3;
+                    if (ts === 0) return 0;
+                    totalScore += ts;
+                }
+            }
+            return totalScore;
         }
 
         function renderSnippets() {
-            const keyword = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+            const keyword = (document.getElementById('searchInput').value || '').trim();
             const langFilter = document.getElementById('languageSelect').value;
             const sortBy = document.getElementById('sortSelect').value;
 
-            let filtered = snippets.filter(s => {
-                if (currentScope === 'favorites' && !s.favorite) return false;
-                if (currentScope === 'team' && !s.sharedWithTeam) return false;
-                if (currentCategory && s.category !== currentCategory) return false;
-                if (langFilter && s.language !== langFilter) return false;
+            let scoredList = [];
+            for (const s of snippets) {
+                if (!canUserSeeSnippet(s)) continue;
+                if (activeShareToken && s.shareToken !== activeShareToken) continue;
+                if (currentVisibility !== 'ALL' && (s.visibility || 'PUBLIC').toUpperCase() !== currentVisibility) continue;
+                if (currentGroupIdFilter && s.groupId !== currentGroupIdFilter) continue;
+                if (currentCategory && s.category !== currentCategory) continue;
+                if (langFilter && s.language !== langFilter) continue;
                 if (currentTag) {
                     const tagsArr = (s.tags || '').split(',').map(t => t.trim().toLowerCase());
-                    if (!tagsArr.includes(currentTag.toLowerCase())) return false;
+                    if (!tagsArr.includes(currentTag.toLowerCase())) continue;
                 }
-                if (keyword) {
-                    const haystack = `${s.title} ${s.description} ${s.tags} ${s.codeContent} ${s.author} ${s.category}`.toLowerCase();
-                    if (!haystack.includes(keyword)) return false;
-                }
-                return true;
+                const score = computeSnippetScore(s, keyword);
+                if (score <= 0) continue;
+                scoredList.push({ snippet: s, score });
+            }
+
+            scoredList.sort((a, b) => {
+                if (sortBy === 'relevance' && keyword && b.score !== a.score) return b.score - a.score;
+                if (sortBy === 'copies') return (b.snippet.copyCount || 0) - (a.snippet.copyCount || 0);
+                if (sortBy === 'title') return a.snippet.title.localeCompare(b.snippet.title);
+                return (b.snippet.id || 0) - (a.snippet.id || 0);
             });
 
-            filtered.sort((a, b) => {
-                if (sortBy === 'copies') return (b.copyCount || 0) - (a.copyCount || 0);
-                if (sortBy === 'title') return a.title.localeCompare(b.title);
-                return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
-            });
-
-            // Update filter banner
+            const filtered = scoredList.map(x => x.snippet);
             const activeFilters = [];
-            if (currentScope !== 'all') activeFilters.push(`Collection: ${currentScope}`);
+            if (currentVisibility !== 'ALL') activeFilters.push(`Scope: ${currentVisibility}`);
+            if (currentGroupIdFilter) activeFilters.push(`Group ID: ${currentGroupIdFilter}`);
             if (currentCategory) activeFilters.push(`Category: ${currentCategory}`);
             if (currentTag) activeFilters.push(`Tag: #${currentTag}`);
-            if (langFilter) activeFilters.push(`Language: ${langFilter}`);
-            if (keyword) activeFilters.push(`Search: "${keyword}"`);
+            if (langFilter) activeFilters.push(`Lang: ${langFilter}`);
+            if (keyword) activeFilters.push(`Query: "${keyword}"`);
 
             const banner = document.getElementById('activeFilterBanner');
             if (activeFilters.length > 0) {
                 banner.classList.remove('d-none');
-                document.getElementById('activeFilterText').textContent = `Showing ${filtered.length} snippet(s) filtered by ${activeFilters.join(' • ')}`;
+                document.getElementById('activeFilterText').textContent = `${filtered.length} snippet(s) • ${activeFilters.join(' • ')}`;
             } else {
                 banner.classList.add('d-none');
             }
 
             const grid = document.getElementById('snippetsGrid');
             if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-12">
-                        <div class="p-5 text-center rounded-4 border border-secondary border-opacity-25" style="background-color: var(--bg-surface);">
-                            <i class="bi bi-search fs-1 text-secondary mb-2 d-block"></i>
-                            <h5 class="fw-bold">No Matching Code Snippets Found</h5>
-                            <p class="text-secondary small mb-3">Try clearing your search filters or create a new reusable snippet.</p>
-                            <button type="button" class="btn btn-outline-info btn-sm" onclick="clearSearchAndFilters()">Reset Filters</button>
-                        </div>
-                    </div>
-                `;
+                grid.innerHTML = `<div class="col-12"><div class="sv-card p-5 text-center"><h6 class="fw-bold mb-1">No Snippets Found</h6><p class="text-secondary small mb-3">Adjust filters or create a new snippet.</p><button type="button" class="btn btn-sm btn-outline-primary" onclick="clearSearchAndFilters()">Reset Filters</button></div></div>`;
                 return;
             }
 
-            grid.innerHTML = filtered.map(s => {
-                const langBadgeClass = LANG_COLORS[s.language] || 'bg-secondary-subtle text-light border border-secondary';
-                const tagsHtml = (s.tags || '').split(',').map(t => t.trim()).filter(Boolean).map(t => {
-                    const safeT = escapeHtml(t);
-                    return `<span class="tag-badge" onclick="setTagFilter('${safeT.replace(/'/g, "\\'")}')">#${safeT}</span>`;
-                }).join(' ');
+            grid.innerHTML = filtered.map(s => renderSnippetCardHtml(s)).join('');
+        }
 
-                return `
-                    <div class="col-md-6">
-                        <div class="snippet-card p-3">
-                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                                <div>
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <span class="lang-badge ${langBadgeClass}">${escapeHtml(s.language)}</span>
-                                        <span class="badge bg-dark border border-secondary text-secondary fw-normal">${escapeHtml(s.category)}</span>
-                                        ${s.sharedWithTeam ? '<span class="badge bg-success-subtle text-success border border-success-subtle" title="Shared with team"><i class="bi bi-people-fill"></i> Team</span>' : ''}
-                                    </div>
-                                    <h6 class="fw-bold text-white mb-0">${escapeHtml(s.title)}</h6>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-link p-1 ${s.favorite ? 'text-warning' : 'text-secondary'}" onclick="toggleFavoriteSnippet(${s.id})" title="Toggle favorite">
-                                    <i class="bi ${s.favorite ? 'bi-star-fill' : 'bi-star'} fs-5"></i>
-                                </button>
+        function renderSnippetCardHtml(s, aiReason = '') {
+            const vis = (s.visibility || 'PUBLIC').toUpperCase();
+            const visBadge = vis === 'GROUP' ? `Group: ${escapeHtml(s.groupName || 'Team')}` : vis;
+            const tagsHtml = (s.tags || '').split(',').map(t => t.trim()).filter(Boolean).map(t => {
+                const safeT = escapeHtml(t);
+                return `<span class="sv-tag" onclick="setTagFilter('${safeT.replace(/'/g, "\'")}')">#${safeT}</span>`;
+            }).join(' ');
+
+            return `
+                <div class="col-md-6">
+                    <div class="sv-card p-3 d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <div>
+                                <span class="badge text-bg-primary me-1">${escapeHtml(s.language)}</span>
+                                <span class="badge text-bg-secondary fw-normal me-1">${escapeHtml(s.category)}</span>
+                                <span class="badge border text-secondary fw-normal">${visBadge}</span>
                             </div>
-
-                            <p class="text-secondary small mb-2">${escapeHtml(s.description || '')}</p>
-
-                            <div class="code-block-wrapper mb-3 flex-grow-1">
-                                <div class="code-block-header">
-                                    <span><i class="bi bi-person-circle me-1"></i>${escapeHtml(s.author || 'Team Developer')}</span>
-                                    <span><i class="bi bi-clipboard-check me-1"></i><span id="copyCount_${s.id}">${s.copyCount || 0}</span> copies</span>
-                                </div>
-                                <pre class="code-pre"><code>${escapeHtml(s.codeContent)}</code></pre>
-                            </div>
-
-                            <div class="d-flex flex-wrap gap-1 mb-3">${tagsHtml}</div>
-
-                            <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25 mt-auto">
-                                <button type="button" class="btn btn-sm btn-info text-dark fw-semibold px-3" onclick="copySnippetCode(${s.id})">
-                                    <i class="bi bi-clipboard me-1"></i> Copy Code
-                                </button>
-                                <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-outline-secondary text-light" onclick="openShareModal(${s.id})" title="Share with Team">
-                                        <i class="bi bi-share"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary text-light" onclick="openSnippetModal(${s.id})" title="Edit Snippet">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger" onclick="promptDeleteSnippet(${s.id})" title="Delete Snippet">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
+                            <button type="button" class="btn btn-sm btn-link p-0 ${s.favorite ? 'text-warning' : 'text-secondary'}" onclick="toggleFavoriteSnippet(${s.id})" title="Star">
+                                <i class="bi ${s.favorite ? 'bi-star-fill' : 'bi-star'}"></i>
+                            </button>
+                        </div>
+                        ${aiReason ? `<div class="small text-primary fw-medium mb-1"><i class="bi bi-stars me-1"></i>${escapeHtml(aiReason)}</div>` : ''}
+                        <h6 class="fw-bold mt-1 mb-1">${escapeHtml(s.title)}</h6>
+                        <p class="text-secondary small mb-2">${escapeHtml(s.description || '')}</p>
+                        <pre class="sv-code-box mb-2 flex-grow-1"><code>${escapeHtml(s.codeContent)}</code></pre>
+                        <div class="d-flex flex-wrap gap-1 mb-2">${tagsHtml}</div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top small text-secondary mt-auto">
+                            <span>${escapeHtml(s.author || 'Member')} • <span id="copyCount_${s.id}">${s.copyCount || 0}</span> copies</span>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-primary" onclick="copySnippetCode(${s.id})"><i class="bi bi-clipboard"></i> Copy</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="forkSnippet(${s.id})" title="Fork"><i class="bi bi-diagram-2"></i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="openShareModal(${s.id})" title="Share"><i class="bi bi-share"></i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="openSnippetModal(${s.id})" title="Edit"><i class="bi bi-pencil"></i></button>
+                                <button type="button" class="btn btn-outline-danger" onclick="promptDeleteSnippet(${s.id})" title="Delete"><i class="bi bi-trash"></i></button>
                             </div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>`;
         }
 
-        // Copy Code Instantly & Increment Usage Counter
-        async function copySnippetCode(id) {
-            const item = snippets.find(s => s.id === id);
-            if (!item) return;
-
-            copyTextToClipboard(item.codeContent);
-            item.copyCount = (item.copyCount || 0) + 1;
-
-            if (isBackendConnected) {
-                try {
-                    const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${id}/copy`, { method: 'POST' });
-                } catch (e) {}
-            }
-            saveStoredSnippets();
-            updateKpisAndCounts();
-            const countEl = document.getElementById(`copyCount_${id}`);
-            if (countEl) countEl.textContent = item.copyCount;
-            showToast(`Copied "${item.title}" to clipboard!`, 'success');
+        // AI Project Search
+        function fillAiPrompt(text) {
+            document.getElementById('aiProjectQueryInput').value = text;
+            runAiProjectSearch(new Event('submit'));
         }
 
-        // Toggle Favorite
-        async function toggleFavoriteSnippet(id) {
-            const item = snippets.find(s => s.id === id);
-            if (!item) return;
-            item.favorite = !item.favorite;
+        async function runAiProjectSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('aiProjectQueryInput').value.trim();
+            if (!query) return;
 
+            const container = document.getElementById('aiResultsContainer');
             if (isBackendConnected) {
                 try {
-                    const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${id}/favorite`, { method: 'PATCH' });
-                } catch (e) {}
+                    const aiUrl = '/api/snippets/ai-search';
+                    const res = await window.fetch(aiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const visible = data.filter(item => canUserSeeSnippet(item.snippet));
+                        container.innerHTML = visible.length === 0
+                            ? '<div class="col-12"><div class="sv-card p-4 text-center small text-secondary">No matching snippets found for this project description.</div></div>'
+                            : visible.map(item => renderSnippetCardHtml(item.snippet, item.reason)).join('');
+                        return;
+                    }
+                } catch (err) {}
             }
-            saveStoredSnippets();
+
+            // Client-side AI intent expansion & scoring
+            const lowerQ = query.toLowerCase();
+            const terms = new Set(lowerQ.split(/[^a-z0-9+.#-]+/).filter(t => t.length >= 2));
+            Object.entries(AI_INTENT_MAP).forEach(([key, extras]) => {
+                if (lowerQ.includes(key)) extras.forEach(x => terms.add(x));
+            });
+
+            const ranked = [];
+            for (const s of snippets) {
+                if (!canUserSeeSnippet(s)) continue;
+                let score = 0;
+                const matched = [];
+                const title = (s.title || '').toLowerCase();
+                const tags = (s.tags || '').toLowerCase();
+                const lang = (s.language || '').toLowerCase();
+                const cat = (s.category || '').toLowerCase();
+                const desc = (s.description || '').toLowerCase();
+                for (const t of terms) {
+                    if (title.includes(t) || tags.includes(t)) { score += 10; matched.push(t); }
+                    else if (lang.includes(t) || cat.includes(t)) { score += 7; matched.push(t); }
+                    else if (desc.includes(t)) { score += 4; }
+                }
+                if (score > 0) {
+                    const uniq = [...new Set(matched)].slice(0, 4).join(', ');
+                    ranked.push({ s, score, reason: `AI Match (${uniq || 'stack fit'})` });
+                }
+            }
+            ranked.sort((a, b) => b.score - a.score);
+            const top = ranked.slice(0, 12);
+            container.innerHTML = top.length === 0
+                ? '<div class="col-12"><div class="sv-card p-4 text-center small text-secondary">No matching snippets found.</div></div>'
+                : top.map(x => renderSnippetCardHtml(x.s, x.reason)).join('');
+        }
+
+        // Groups Management
+        function renderGroupsView() {
+            const myGrps = getMyGroups();
+            const myEl = document.getElementById('myGroupsList');
+            myEl.innerHTML = myGrps.length === 0
+                ? '<div class="col-12 small text-secondary">You are not in any group yet. Create one or ask a teammate to add you.</div>'
+                : myGrps.map(g => renderGroupCardHtml(g, true)).join('');
+
+            const allEl = document.getElementById('allGroupsList');
+            allEl.innerHTML = groups.length === 0
+                ? '<div class="col-12 small text-secondary">No project groups created yet.</div>'
+                : groups.map(g => renderGroupCardHtml(g, false)).join('');
+        }
+
+        function renderGroupCardHtml(g, showLeaveOnly) {
+            const uname = currentUser ? currentUser.username.toLowerCase() : '';
+            const isMember = (g.members || []).some(m => m.toLowerCase() === uname);
+            const membersHtml = (g.members || []).map(m =>
+                `<span class="badge text-bg-secondary me-1 mb-1">${escapeHtml(m)} ${!showLeaveOnly ? `<i class="bi bi-x ms-1" style="cursor:pointer;" onclick="removeMemberFromGroup(${g.id}, '${escapeHtml(m).replace(/'/g, "\'")}')"></i>` : ''}</span>`
+            ).join('');
+
+            return `
+                <div class="col-md-6">
+                    <div class="sv-card p-3 h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div>
+                                <h6 class="fw-bold mb-0">${escapeHtml(g.name)}</h6>
+                                <small class="text-primary">${escapeHtml(g.projectName)}</small>
+                            </div>
+                            ${isMember ? `<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="leaveProjectGroup(${g.id})">Leave Group</button>` : ''}
+                        </div>
+                        <p class="small text-secondary mb-2">${escapeHtml(g.description || '')}</p>
+                        <div class="mb-2">${membersHtml || '<span class="small text-secondary">No members</span>'}</div>
+                        ${!showLeaveOnly ? `
+                        <div class="input-group input-group-sm mt-auto pt-2">
+                            <input type="text" id="addMemberInput_${g.id}" class="form-control" placeholder="Add username...">
+                            <button type="button" class="btn btn-outline-primary" onclick="addMemberToGroup(${g.id})">Add</button>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+        }
+
+        async function createProjectGroup(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            const name = document.getElementById('groupNameInput').value.trim();
+            const projectName = document.getElementById('groupProjectInput').value.trim();
+            const description = document.getElementById('groupDescInput').value.trim();
+
+            const payload = { name, projectName, description, createdBy: currentUser.username, members: [currentUser.username] };
+            let created = null;
+            if (isBackendConnected) {
+                try {
+                    const grpUrl = '/api/groups';
+                    const res = await window.fetch(grpUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) created = await res.json();
+                } catch (err) {}
+            }
+            if (!created) {
+                const newId = groups.reduce((m, g) => Math.max(m, g.id || 0), 0) + 1;
+                created = { id: newId, ...payload };
+            }
+            groups.push(created);
+            saveStoredGroups();
+            e.target.reset();
+            renderGroupsView();
             renderAll();
-            showToast(item.favorite ? 'Added to starred favorites' : 'Removed from favorites', 'info');
+            showToast(`Created group "${name}"`, 'success');
         }
 
-        // Open Create / Edit Modal
+        async function addMemberToGroup(groupId) {
+            const input = document.getElementById(`addMemberInput_${groupId}`);
+            if (!input) return;
+            const username = input.value.trim().toLowerCase();
+            if (!username) return;
+            const grp = groups.find(g => g.id === groupId);
+            if (!grp) return;
+
+            if (isBackendConnected) {
+                try {
+                    const grpBase = '/api/groups';
+                    const res = await window.fetch(`${grpBase}/${groupId}/members`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username })
+                    });
+                    if (res.ok) {
+                        const updated = await res.json();
+                        Object.assign(grp, updated);
+                    }
+                } catch (err) {}
+            } else if (!grp.members.includes(username)) {
+                grp.members.push(username);
+            }
+            saveStoredGroups();
+            input.value = '';
+            renderGroupsView();
+            renderAll();
+            showToast(`Added ${username} to ${grp.name}`, 'success');
+        }
+
+        async function removeMemberFromGroup(groupId, username) {
+            const grp = groups.find(g => g.id === groupId);
+            if (!grp) return;
+            if (isBackendConnected) {
+                try {
+                    const grpBase = '/api/groups';
+                    await window.fetch(`${grpBase}/${groupId}/members/${encodeURIComponent(username)}`, { method: 'DELETE' });
+                } catch (err) {}
+            }
+            grp.members = grp.members.filter(m => m.toLowerCase() !== username.toLowerCase());
+            saveStoredGroups();
+            renderGroupsView();
+            renderAll();
+            showToast(`Removed ${username}`, 'info');
+        }
+
+        async function leaveProjectGroup(groupId) {
+            if (!currentUser) return;
+            const grp = groups.find(g => g.id === groupId);
+            if (!grp) return;
+            if (isBackendConnected) {
+                try {
+                    const grpBase = '/api/groups';
+                    await window.fetch(`${grpBase}/${groupId}/leave`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: currentUser.username })
+                    });
+                } catch (err) {}
+            }
+            grp.members = grp.members.filter(m => m.toLowerCase() !== currentUser.username.toLowerCase());
+            saveStoredGroups();
+            renderGroupsView();
+            renderAll();
+            showToast(`You left "${grp.name}"`, 'warning');
+        }
+
+        // Snippet CRUD & Modal
+        function toggleGroupSelectorInModal() {
+            const vis = document.getElementById('visibilityInput').value;
+            const wrap = document.getElementById('modalGroupWrapper');
+            wrap.classList.toggle('d-none', vis !== 'GROUP');
+            if (vis === 'GROUP') {
+                const sel = document.getElementById('groupSelectInput');
+                const myGrps = getMyGroups();
+                sel.innerHTML = myGrps.length === 0
+                    ? '<option value="">Join or create a group first</option>'
+                    : myGrps.map(g => `<option value="${g.id}">${escapeHtml(g.name)} (${escapeHtml(g.projectName)})</option>`).join('');
+            }
+        }
+
         function openSnippetModal(id = null) {
-            const form = document.getElementById('snippetForm');
-            form.reset();
+            document.getElementById('snippetForm').reset();
             if (id) {
                 const item = snippets.find(s => s.id === id);
                 if (!item) return;
-                document.getElementById('snippetModalTitle').textContent = 'Edit Code Snippet';
+                document.getElementById('snippetModalTitle').textContent = 'Edit Snippet';
                 document.getElementById('snippetIdInput').value = item.id;
                 document.getElementById('titleInput').value = item.title;
                 document.getElementById('languageInput').value = item.language;
                 document.getElementById('categoryInput').value = item.category;
-                document.getElementById('authorInput').value = item.author || 'Team Developer';
+                document.getElementById('visibilityInput').value = (item.visibility || 'PUBLIC').toUpperCase();
+                toggleGroupSelectorInModal();
+                if (item.groupId) document.getElementById('groupSelectInput').value = item.groupId;
+                document.getElementById('projectContextInput').value = item.projectContext || 'General Utility';
+                document.getElementById('authorInput').value = item.author || (currentUser ? currentUser.name : '');
                 document.getElementById('tagsInput').value = item.tags || '';
                 document.getElementById('descriptionInput').value = item.description || '';
                 document.getElementById('codeContentInput').value = item.codeContent;
                 document.getElementById('favoriteInput').checked = !!item.favorite;
                 document.getElementById('sharedInput').checked = !!item.sharedWithTeam;
             } else {
-                document.getElementById('snippetModalTitle').textContent = 'Create Reusable Code Snippet';
+                document.getElementById('snippetModalTitle').textContent = 'New Code Snippet';
                 document.getElementById('snippetIdInput').value = '';
-                document.getElementById('authorInput').value = 'Aarav Sharma';
+                document.getElementById('visibilityInput').value = 'PUBLIC';
+                toggleGroupSelectorInModal();
+                document.getElementById('authorInput').value = currentUser ? currentUser.name : '';
                 document.getElementById('sharedInput').checked = true;
             }
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('snippetModal'));
-            modal.show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('snippetModal')).show();
         }
 
-        // Save (Create or Update) Snippet
         async function saveSnippet(event) {
             event.preventDefault();
             const idVal = document.getElementById('snippetIdInput').value;
+            const vis = document.getElementById('visibilityInput').value;
+            const selGroupId = vis === 'GROUP' ? Number(document.getElementById('groupSelectInput').value || 0) : null;
+            const selGroupObj = selGroupId ? groups.find(g => g.id === selGroupId) : null;
+
             const payload = {
                 title: document.getElementById('titleInput').value.trim(),
                 language: document.getElementById('languageInput').value,
                 category: document.getElementById('categoryInput').value,
-                author: document.getElementById('authorInput').value.trim() || 'Team Developer',
+                visibility: vis,
+                groupId: selGroupId || null,
+                groupName: selGroupObj ? selGroupObj.name : null,
+                ownerUsername: currentUser ? currentUser.username : null,
+                projectContext: document.getElementById('projectContextInput').value.trim() || 'General Utility',
+                author: document.getElementById('authorInput').value.trim() || (currentUser ? currentUser.name : 'Member'),
                 tags: document.getElementById('tagsInput').value.trim(),
                 description: document.getElementById('descriptionInput').value.trim(),
                 codeContent: document.getElementById('codeContentInput').value,
                 favorite: document.getElementById('favoriteInput').checked,
-                sharedWithTeam: document.getElementById('sharedInput').checked
+                sharedWithTeam: (vis === 'GLOBAL' || vis === 'PUBLIC') && document.getElementById('sharedInput').checked
             };
 
             if (idVal) {
                 const numId = Number(idVal);
                 const idx = snippets.findIndex(s => s.id === numId);
-                if (idx !== -1) {
-                    snippets[idx] = { ...snippets[idx], ...payload, updatedAt: new Date().toISOString() };
-                }
+                if (idx !== -1) snippets[idx] = { ...snippets[idx], ...payload };
                 if (isBackendConnected) {
                     try {
-                        const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${numId}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
+                        const apiBase = '/api/snippets';
+                        await window.fetch(`${apiBase}/${numId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     } catch (e) {}
                 }
-                showToast(`Updated snippet "${payload.title}"`, 'success');
+                showToast(`Updated "${payload.title}"`, 'success');
             } else {
                 const newId = snippets.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
-                const newSnippet = {
-                    id: newId,
-                    ...payload,
-                    shareToken: 'shr-' + Math.random().toString(36).substring(2, 9),
-                    copyCount: 0,
-                    updatedAt: new Date().toISOString()
-                };
+                const newSnippet = { id: newId, ...payload, shareToken: 'shr-' + Math.random().toString(36).substring(2, 9), copyCount: 0 };
                 if (isBackendConnected) {
                     try {
-                        const apiRoot = '/api/snippets'; const res = await window.fetch(apiRoot, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        if (res.ok) {
-                            const created = await res.json();
-                            snippets.unshift(created);
-                        } else {
-                            snippets.unshift(newSnippet);
-                        }
-                    } catch (e) {
-                        snippets.unshift(newSnippet);
-                    }
+                        const apiBase = '/api/snippets';
+                        const res = await window.fetch(apiBase, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        snippets.unshift(res.ok ? await res.json() : newSnippet);
+                    } catch (e) { snippets.unshift(newSnippet); }
                 } else {
                     snippets.unshift(newSnippet);
                 }
-                showToast(`Saved new snippet "${payload.title}"`, 'success');
+                showToast(`Saved "${payload.title}"`, 'success');
             }
 
             saveStoredSnippets();
@@ -1213,7 +1517,64 @@ mvn spring-boot:run</pre>
             bootstrap.Modal.getInstance(document.getElementById('snippetModal')).hide();
         }
 
-        // Delete Snippet Modal Flow
+        async function copySnippetCode(id) {
+            const item = snippets.find(s => s.id === id);
+            if (!item) return;
+            copyTextToClipboard(item.codeContent);
+            item.copyCount = (item.copyCount || 0) + 1;
+            if (isBackendConnected) {
+                try {
+                    const apiBase = '/api/snippets';
+                    await window.fetch(`${apiBase}/${id}/copy`, { method: 'POST' });
+                } catch (e) {}
+            }
+            saveStoredSnippets();
+            const el = document.getElementById(`copyCount_${id}`);
+            if (el) el.textContent = item.copyCount;
+            showToast(`Copied "${item.title}"`, 'success');
+        }
+
+        async function forkSnippet(id) {
+            const orig = snippets.find(s => s.id === id);
+            if (!orig) return;
+            const authorName = currentUser ? currentUser.name : 'Collaborator';
+            const payload = { ...orig, title: `${orig.title} (Fork)`, visibility: 'PUBLIC', ownerUsername: currentUser ? currentUser.username : null, author: authorName, copyCount: 0 };
+            let created = null;
+            if (isBackendConnected) {
+                try {
+                    const apiBase = '/api/snippets';
+                    const res = await window.fetch(`${apiBase}/${id}/fork`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ author: authorName, projectContext: 'New Project Adaptation' })
+                    });
+                    if (res.ok) created = await res.json();
+                } catch (e) {}
+            }
+            if (!created) {
+                const newId = snippets.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                created = { ...payload, id: newId, shareToken: 'frk-' + Math.random().toString(36).substring(2, 9) };
+            }
+            snippets.unshift(created);
+            saveStoredSnippets();
+            renderAll();
+            openSnippetModal(created.id);
+        }
+
+        async function toggleFavoriteSnippet(id) {
+            const item = snippets.find(s => s.id === id);
+            if (!item) return;
+            item.favorite = !item.favorite;
+            if (isBackendConnected) {
+                try {
+                    const apiBase = '/api/snippets';
+                    await window.fetch(`${apiBase}/${id}/favorite`, { method: 'PATCH' });
+                } catch (e) {}
+            }
+            saveStoredSnippets();
+            renderAll();
+        }
+
         function promptDeleteSnippet(id) {
             const item = snippets.find(s => s.id === id);
             if (!item) return;
@@ -1228,233 +1589,86 @@ mvn spring-boot:run</pre>
             snippets = snippets.filter(s => s.id !== id);
             if (isBackendConnected) {
                 try {
-                    const apiBase = '/api/snippets'; await window.fetch(`${apiBase}/${id}`, { method: 'DELETE' });
+                    const apiBase = '/api/snippets';
+                    await window.fetch(`${apiBase}/${id}`, { method: 'DELETE' });
                 } catch (e) {}
             }
             saveStoredSnippets();
             renderAll();
             bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
-            showToast('Snippet deleted', 'warning');
             pendingDeleteId = null;
         }
 
-        // Share Snippet Modal Flow
         function openShareModal(id) {
             const item = snippets.find(s => s.id === id);
             if (!item) return;
-            document.getElementById('shareModalSnippetTitle').textContent = `${item.title} (${item.language} • ${item.category})`;
-            const shareUrl = `http://localhost:8080/api/snippets/share/${item.shareToken || 'sb-exc-001'}`;
-            document.getElementById('shareUrlInput').value = shareUrl;
-            const md = `### ${item.title} (${item.language})\n> ${item.description || ''}\n\`\`\`${item.language.toLowerCase()}\n${item.codeContent}\n\`\`\``;
-            document.getElementById('shareMarkdownInput').value = md;
+            document.getElementById('shareModalSnippetTitle').textContent = `${item.title} (${item.language})`;
+            const origin = (window.location.protocol.startsWith('http') && !window.location.hostname.includes('googleusercontent'))
+                ? window.location.origin : 'http://localhost:8080';
+            document.getElementById('shareUrlInput').value = `${origin}/?share=${item.shareToken || 'sb-exc-001'}`;
+            document.getElementById('shareMarkdownInput').value = `### ${item.title}
+\`\`\`${item.language.toLowerCase()}
+${item.codeContent}
+\`\`\``;
             bootstrap.Modal.getOrCreateInstance(document.getElementById('shareModal')).show();
         }
 
-        function copyShareUrl() {
-            const val = document.getElementById('shareUrlInput').value;
-            copyTextToClipboard(val);
-            showToast('Team share URL copied to clipboard!', 'info');
-        }
+        function copyShareUrl() { copyTextToClipboard(document.getElementById('shareUrlInput').value); showToast('Link copied', 'info'); }
+        function copyShareMarkdown() { copyTextToClipboard(document.getElementById('shareMarkdownInput').value); showToast('Markdown copied', 'success'); }
 
-        function copyShareMarkdown() {
-            const val = document.getElementById('shareMarkdownInput').value;
-            copyTextToClipboard(val);
-            showToast('Markdown snippet copied for team chat!', 'success');
-        }
-
-        // Export & Reset Utilities
         function exportSnippetsJson() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snippets, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "reusable_code_snippets_backup.json");
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-            showToast('Exported snippets JSON backup', 'info');
+            const a = document.createElement('a');
+            a.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snippets, null, 2)));
+            a.setAttribute("download", "reusable_code_snippets.json");
+            document.body.appendChild(a); a.click(); a.remove();
         }
 
-        function resetDemoData() {
-            snippets = JSON.parse(JSON.stringify(SEED_SNIPPETS));
-            saveStoredSnippets();
-            clearSearchAndFilters();
-            showToast('Restored default seed snippets', 'info');
-        }
-
-        // REST API Simulator Logic
         function loadApiPreset() {
-            const preset = document.getElementById('apiPresetSelect').value;
-            const methodInput = document.getElementById('apiMethodInput');
-            const endpointInput = document.getElementById('apiEndpointInput');
-            const payloadInput = document.getElementById('apiPayloadInput');
-
-            if (preset === 'GET_ALL') {
-                methodInput.value = 'GET';
-                endpointInput.value = '/api/snippets?language=Java';
-                payloadInput.value = '';
-            } else if (preset === 'GET_STATS') {
-                methodInput.value = 'GET';
-                endpointInput.value = '/api/snippets/stats';
-                payloadInput.value = '';
-            } else if (preset === 'POST_CREATE') {
-                methodInput.value = 'POST';
-                endpointInput.value = '/api/snippets';
-                payloadInput.value = JSON.stringify({
-                    title: "Spring Data JPA Specification Filter",
-                    language: "Java",
-                    category: "Database & Queries",
-                    tags: "jpa,specification,dynamic-query",
-                    description: "Dynamic predicate builder for multi-criteria search.",
-                    codeContent: "public static Specification<Snippet> hasLanguage(String lang) {\n    return (root, query, cb) -> cb.equal(root.get(\"language\"), lang);\n}",
-                    author: "Vikram Menon",
-                    favorite: true,
-                    sharedWithTeam: true
-                }, null, 2);
-            } else if (preset === 'PATCH_FAV') {
-                methodInput.value = 'PATCH';
-                endpointInput.value = '/api/snippets/1/favorite';
-                payloadInput.value = '';
-            } else if (preset === 'POST_COPY') {
-                methodInput.value = 'POST';
-                endpointInput.value = '/api/snippets/1/copy';
-                payloadInput.value = '';
-            } else if (preset === 'GET_SHARE') {
-                methodInput.value = 'GET';
-                endpointInput.value = '/api/snippets/share/sb-exc-001';
-                payloadInput.value = '';
-            }
+            const p = document.getElementById('apiPresetSelect').value;
+            const m = document.getElementById('apiMethodInput');
+            const u = document.getElementById('apiEndpointInput');
+            const b = document.getElementById('apiPayloadInput');
+            if (p === 'GET_ALL') { m.value = 'GET'; u.value = '/api/snippets'; b.value = ''; }
+            else if (p === 'AI_SEARCH') { m.value = 'POST'; u.value = '/api/snippets/ai-search'; b.value = JSON.stringify({ query: "Spring Boot ecommerce JWT pagination Docker" }, null, 2); }
+            else if (p === 'GET_GROUPS') { m.value = 'GET'; u.value = '/api/groups'; b.value = ''; }
+            else { m.value = 'GET'; u.value = '/api/snippets/stats'; b.value = ''; }
         }
 
         function executeSimulatedApiCall() {
-            const method = document.getElementById('apiMethodInput').value;
-            const uri = document.getElementById('apiEndpointInput').value;
-            const bodyRaw = document.getElementById('apiPayloadInput').value;
-            const statusPill = document.getElementById('apiStatusPill');
-            const output = document.getElementById('apiResponseOutput');
-
-            let responseObj = {};
-            let statusText = '200 OK';
-
-            if (uri.includes('/stats')) {
-                const byLang = {};
-                snippets.forEach(s => { byLang[s.language] = (byLang[s.language] || 0) + 1; });
-                responseObj = {
-                    totalSnippets: snippets.length,
-                    favoriteCount: snippets.filter(s => s.favorite).length,
-                    sharedCount: snippets.filter(s => s.sharedWithTeam).length,
-                    totalCopies: snippets.reduce((sum, s) => sum + (s.copyCount || 0), 0),
-                    languageBreakdown: byLang
-                };
-            } else if (method === 'POST' && uri === '/api/snippets') {
-                try {
-                    const parsed = JSON.parse(bodyRaw);
-                    const newId = snippets.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
-                    const created = {
-                        id: newId,
-                        ...parsed,
-                        shareToken: 'shr-' + Math.random().toString(36).substring(2, 9),
-                        copyCount: 0,
-                        updatedAt: new Date().toISOString()
-                    };
-                    snippets.unshift(created);
-                    saveStoredSnippets();
-                    renderAll();
-                    responseObj = created;
-                    statusText = '201 Created';
-                    showToast('Created snippet via REST POST /api/snippets', 'success');
-                } catch (e) {
-                    statusText = '400 Bad Request';
-                    responseObj = { error: 'Invalid JSON payload', message: e.message };
-                }
-            } else if (uri.includes('/favorite')) {
-                const target = snippets[0];
-                if (target) {
-                    target.favorite = !target.favorite;
-                    saveStoredSnippets();
-                    renderAll();
-                    responseObj = target;
-                }
-            } else if (uri.includes('/copy')) {
-                const target = snippets[0];
-                if (target) {
-                    target.copyCount = (target.copyCount || 0) + 1;
-                    saveStoredSnippets();
-                    renderAll();
-                    responseObj = target;
-                }
-            } else if (uri.includes('/share/')) {
-                const token = uri.split('/share/')[1];
-                const found = snippets.find(s => s.shareToken === token) || snippets[0];
-                responseObj = found;
-            } else {
-                const langMatch = uri.match(/language=([^&]+)/);
-                if (langMatch) {
-                    const lang = decodeURIComponent(langMatch[1]);
-                    responseObj = snippets.filter(s => s.language.toLowerCase() === lang.toLowerCase());
-                } else {
-                    responseObj = snippets;
-                }
-            }
-
-            statusPill.textContent = statusText;
-            statusPill.className = statusText.startsWith('4') ? 'badge bg-danger' : 'badge bg-success';
-            output.textContent = JSON.stringify(responseObj, null, 2);
+            const u = document.getElementById('apiEndpointInput').value;
+            const out = document.getElementById('apiResponseOutput');
+            if (u.includes('/groups')) out.textContent = JSON.stringify(groups, null, 2);
+            else if (u.includes('/stats')) out.textContent = JSON.stringify({ totalSnippets: snippets.length, groups: groups.length }, null, 2);
+            else out.textContent = JSON.stringify(snippets.slice(0, 5), null, 2);
         }
 
-        // Clipboard Helper with Fallback for Sandboxed Iframes
         function copyTextToClipboard(text) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
-            } else {
-                fallbackCopyText(text);
-            }
+            } else fallbackCopyText(text);
         }
 
         function fallbackCopyText(text) {
             const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            try {
-                document.execCommand('copy');
-            } catch (e) {}
+            ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
             ta.remove();
         }
 
-        // Toast Helper
-        function showToast(message, variant = 'info') {
-            const container = document.getElementById('toastContainer');
-            const id = 'toast_' + Date.now();
-            const icon = variant === 'success' ? 'bi-check-circle-fill text-success' :
-                         variant === 'warning' ? 'bi-exclamation-circle-fill text-warning' : 'bi-info-circle-fill text-info';
+        function showToast(msg, variant = 'info') {
+            const c = document.getElementById('toastContainer');
+            const id = 't_' + Date.now();
             const el = document.createElement('div');
             el.id = id;
-            el.className = 'toast align-items-center text-bg-dark border-secondary show mb-2';
-            el.setAttribute('role', 'alert');
-            el.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body d-flex align-items-center gap-2">
-                        <i class="bi ${icon}"></i>
-                        <span>${escapeHtml(message)}</span>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('${id}').remove()" aria-label="Close"></button>
-                </div>
-            `;
-            container.appendChild(el);
-            setTimeout(() => {
-                if (document.getElementById(id)) document.getElementById(id).remove();
-            }, 3200);
+            el.className = `toast align-items-center text-bg-${variant === 'success' ? 'success' : variant === 'warning' ? 'warning' : 'dark'} show mb-2`;
+            el.innerHTML = `<div class="d-flex"><div class="toast-body small">${escapeHtml(msg)}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('${id}').remove()" aria-label="Close"></button></div>`;
+            c.appendChild(el);
+            setTimeout(() => { if (document.getElementById(id)) document.getElementById(id).remove(); }, 2800);
         }
 
         function escapeHtml(str) {
-            return String(str || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
